@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flowery Charms – Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink-deep:    #a8336e;
+      --pink-mid:     #d45f9a;
+      --pink-light:   #f0b3d4;
+      --pink-pale:    #fce8f3;
+      --purple-deep:  #6a2fa0;
+      --purple-mid:   #9c5dd1;
+      --gold:         #f4c542;
+      --white:        #ffffff;
+      --glass-bg:     rgba(255, 255, 255, 0.18);
+      --glass-border: rgba(255, 255, 255, 0.35);
+      --text-dark:    #2d0a1f;
+      --text-mid:     #7a3a5c;
+      --text-light:   rgba(255,255,255,0.75);
+      --error-bg:     rgba(220, 38, 38, 0.15);
+      --error-border: rgba(220, 38, 38, 0.4);
+      --error-text:   #fca5a5;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #b83a8c 0%, #7c2fa8 40%, #c0558a 75%, #e0709a 100%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ───── Canvas ───── */
+    canvas#petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ───── Login card ───── */
+    .card {
+      position: relative;
+      z-index: 10;
+      width: 360px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px 36px 36px;
+      box-shadow: 0 8px 40px rgba(80, 0, 60, 0.35);
+      animation: cardIn .6s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(28px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ───── Header ───── */
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      background: rgba(255,255,255,0.22);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--white);
+      letter-spacing: .01em;
+      margin-bottom: 4px;
+    }
+
+    .brand p {
+      font-size: 13px;
+      color: var(--text-light);
+      font-weight: 300;
+    }
+
+    /* ───── Error alert ───── */
+    .alert {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      border-radius: 10px;
+      padding: 10px 13px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--error-text);
+      animation: shake .35s cubic-bezier(.36,.07,.19,.97);
+    }
+
+    .alert.show { display: flex; }
+
+    @keyframes shake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-4px); }
+      40%, 60% { transform: translateX(4px); }
+    }
+
+    .alert-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #f87171;
+      flex-shrink: 0;
+    }
+
+    /* ───── Fields ───── */
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 10px 13px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, background .2s;
+    }
+
+    .field input::placeholder { color: rgba(255,255,255,0.45); }
+
+    .field input:focus {
+      border-color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.22);
+    }
+
+    .field input.invalid {
+      border-color: rgba(248, 113, 113, 0.7);
+      background: rgba(220, 38, 38, 0.1);
+    }
+
+    .field-error {
+      font-size: 11px;
+      color: #fca5a5;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .field-error.show { display: block; }
+
+    /* ───── Row (remember + forgot) ───── */
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 4px 0 20px;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      cursor: pointer;
+    }
+
+    .remember input[type="checkbox"] {
+      accent-color: var(--pink-light);
+      width: 14px; height: 14px;
+      cursor: pointer;
+    }
+
+    .forgot {
+      font-size: 12px;
+      color: var(--pink-light);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .forgot:hover { color: var(--white); }
+
+    /* ───── Button ───── */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink-deep), var(--purple-deep));
+      color: var(--white);
+      box-shadow: 0 4px 18px rgba(100, 0, 80, 0.4);
+    }
+
+    .btn-primary:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
+    .btn-primary:active:not(:disabled) { transform: scale(.98); }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    /* spinner */
+    .spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn.loading .spinner { display: block; }
+    .btn.loading .btn-label { opacity: .7; }
+
+    /* ───── Footer ───── */
+    .card-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .card-footer a {
+      color: var(--pink-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .card-footer a:hover { color: var(--white); }
+
+    /* ───── Motion sensitivity ───── */
+    @media (prefers-reduced-motion: reduce) {
+      canvas#petals { display: none; }
+      .card { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="petals"></canvas>
+
+  <div class="card" role="main">
+
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">🌼</div>
+      <h1>Flowery Charms</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <div class="alert" id="alert" role="alert" aria-live="polite">
+      <div class="alert-dot"></div>
+      <span id="alert-text">Incorrect username or password.</span>
+    </div>
+
+    <form id="login-form" novalidate>
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="e.g. rosegarden42"
+          autocomplete="username"
+          spellcheck="false"
+        >
+        <p class="field-error" id="username-error">Please enter your username.</p>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Your password"
+          autocomplete="current-password"
+        >
+        <p class="field-error" id="password-error">Please enter your password.</p>
+      </div>
+
+      <div class="row">
+        <label class="remember">
+          <input type="checkbox" id="remember" name="remember">
+          Remember me
+        </label>
+        <a href="#" class="forgot" id="forgot-link">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="login-btn">
+        <div class="spinner" aria-hidden="true"></div>
+        <span class="btn-label">Sign in</span>
+      </button>
+
+    </form>
+
+    <p class="card-footer">
+      No account? <a href="#">Create one</a>
+    </p>
+
+  </div>
+
+  <script>
+    /* ─── Petal canvas animation ─── */
+    (function () {
+      const canvas = document.getElementById('petals');
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const PETAL_COLORS = [
+        ['#ffffff', '#ffd700'],   // white / gold
+        ['#d45f9a', '#f4c542'],   // pink / gold
+        ['#9c5dd1', '#f4c542'],   // purple / gold
+        ['#f0b3d4', '#a8336e'],   // pale pink / deep pink
+      ];
+
+      const MAX = 28;
+      const petals = [];
+
+      class Petal {
+        constructor() { this.reset(true); }
+
+        reset(initial) {
+          this.x     = Math.random() * canvas.width;
+          this.y     = initial ? Math.random() * canvas.height : -40;
+          this.size  = 10 + Math.random() * 18;
+          this.speed = 0.6 + Math.random() * 1.4;
+          this.wind  = (Math.random() - 0.5) * 0.8;
+          this.rot   = Math.random() * Math.PI * 2;
+          this.rotSpeed = (Math.random() - 0.5) * 0.04;
+          this.alpha = 0.5 + Math.random() * 0.5;
+          const pick = PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)];
+          this.petalColor  = pick[0];
+          this.centerColor = pick[1];
+          this.petals = 5 + Math.floor(Math.random() * 3);
+        }
+
+        draw() {
+          ctx.save();
+          ctx.globalAlpha = this.alpha;
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.rot);
+
+          const r = this.size;
+          const pr = r * 0.45;
+          const cr = r * 0.22;
+
+          for (let i = 0; i < this.petals; i++) {
+            ctx.save();
+            ctx.rotate((i / this.petals) * Math.PI * 2);
+            ctx.beginPath();
+            ctx.ellipse(0, -r * 0.55, pr * 0.55, pr, 0, 0, Math.PI * 2);
+            ctx.fillStyle = this.petalColor;
+            ctx.fill();
+            ctx.restore();
+          }
+
+          ctx.beginPath();
+          ctx.arc(0, 0, cr, 0, Math.PI * 2);
+          ctx.fillStyle = this.centerColor;
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        update() {
+          this.y   += this.speed;
+          this.x   += this.wind;
+          this.rot += this.rotSpeed;
+          if (this.y > canvas.height + 40) this.reset(false);
+        }
+      }
+
+      for (let i = 0; i < MAX; i++) petals.push(new Petal());
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        petals.forEach(p => { p.draw(); p.update(); });
+        requestAnimationFrame(loop);
+      }
+      loop();
+    })();
+
+
+    /* ─── Form logic ─── */
+    const form       = document.getElementById('login-form');
+    const btnEl      = document.getElementById('login-btn');
+    const alertBox   = document.getElementById('alert');
+    const alertText  = document.getElementById('alert-text');
+    const userInput  = document.getElementById('username');
+    const passInput  = document.getElementById('password');
+    const userError  = document.getElementById('username-error');
+    const passError  = document.getElementById('password-error');
+
+    function showAlert(msg) {
+      alertText.textContent = msg;
+      alertBox.classList.remove('show');
+      void alertBox.offsetWidth; // restart animation
+      alertBox.classList.add('show');
+    }
+
+    function clearFieldError(input, errorEl) {
+      input.classList.remove('invalid');
+      errorEl.classList.remove('show');
+    }
+
+    userInput.addEventListener('input', () => clearFieldError(userInput, userError));
+    passInput.addEventListener('input', () => clearFieldError(passInput, passError));
+
+    function validate() {
+      let ok = true;
+
+      if (!userInput.value.trim()) {
+        userInput.classList.add('invalid');
+        userError.classList.add('show');
+        ok = false;
+      }
+
+      if (!passInput.value) {
+        passInput.classList.add('invalid');
+        passError.classList.add('show');
+        ok = false;
+      }
+
+      return ok;
+    }
+
+    function setLoading(on) {
+      btnEl.disabled = on;
+      btnEl.classList.toggle('loading', on);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      alertBox.classList.remove('show');
+
+      if (!validate()) return;
+
+      setLoading(true);
+
+      // Simulate network request — replace with your real fetch() call
+      await new Promise(r => setTimeout(r, 1800));
+
+      setLoading(false);
+
+      // Demo: treat 'admin' / 'flowers' as valid credentials
+      const user = userInput.value.trim();
+      const pass = passInput.value;
+
+      if (user === 'admin' && pass === 'flowers') {
+        btnEl.querySelector('.btn-label').textContent = '✓ Welcome back!';
+        btnEl.style.background = 'linear-gradient(135deg, #166534, #15803d)';
+      } else {
+        showAlert('Incorrect username or password. Please try again.');
+        passInput.value = '';
+        passInput.focus();
+      }
+    });
+
+    document.getElementById('forgot-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      showAlert('Password reset link sent — check your email.');
+      alertBox.style.borderColor = 'rgba(244,197,66,0.5)';
+      alertBox.style.background  = 'rgba(244,197,66,0.12)';
+      alertText.style.color      = '#fde68a';
+    });
+  </script>
+
+</body>
+</html>

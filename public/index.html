@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soma Side — African Stories, Amplified</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --plum:       #1e0130;
+      --plum-mid:   #2e0a3f;
+      --plum-light: #3a1250;
+      --purple:     #7b2fbe;
+      --violet:     #b06aff;
+      --violet-dim: rgba(176,106,255,0.15);
+      --gold:       #e8b84b;
+      --white:      #ffffff;
+      --muted:      rgba(255,255,255,0.5);
+      --radius-xl:  28px;
+      --radius-lg:  16px;
+    }
+
+    *, *::before, *::after { cursor: none !important; margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Source Sans 3', sans-serif; background: var(--plum); color: var(--white); overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+
+    /* grain */
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: 9000;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.032; pointer-events: none;
+    }
+
+    /* ── CURSOR ── */
+    .cursor {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--gold); position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 99999;
+      transform: translate(-50%,-50%);
+      transition: width .18s, height .18s, background .18s;
+      mix-blend-mode: difference;
+    }
+    .cursor.expand { width: 44px; height: 44px; background: var(--violet); opacity: .85; }
+
+    /* ── NAV (matches home.html) ── */
+    .navbar { display: flex; justify-content: space-between; align-items: center; background: rgba(30,1,63,0.85); backdrop-filter: blur(18px); padding: 0 2.5rem; height: 65px; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+    .navbar .logo img { height: 40px; width: auto; max-width: 160px; object-fit: contain; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { color: rgba(255,255,255,0.75); font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.05em; padding: 0.5rem 0; position: relative; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+    .nav-links a::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: var(--gold); transition: width 0.3s ease; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .menu-toggle { display: none; font-size: 1.6rem; color: #fff; cursor: pointer; background: none; border: none; }
+
+    @media (max-width: 600px) {
+      .navbar { padding: 0 1.2rem; }
+      .nav-links { flex-direction: column; max-height: 0; overflow: hidden; width: 100%; position: absolute; top: 65px; left: 0; background: #1e0130; padding: 0 1.5rem; transition: max-height 0.3s ease, padding 0.3s ease; gap: 0; }
+      .nav-links.active { max-height: 400px; padding: 1rem 1.5rem; }
+      .nav-links li { padding: 0.5rem 0; }
+      .menu-toggle { display: block; }
+    }
+
+    /* ── HERO ── */
+    .hero-grid-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(123,47,190,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123,47,190,0.07) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none;
+    }
+    .orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; }
+    .orb-1 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(123,47,190,.55), transparent 65%); top: -200px; right: -200px; opacity: .5; }
+    .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(232,184,75,.18), transparent 65%); bottom: -100px; left: -150px; }
+    .orb-3 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(176,106,255,.3), transparent 65%); top: 40%; left: 30%; opacity: .2; }
+
+    .hero {
+      min-height: 100vh; padding: 9rem 3rem 6rem;
+      position: relative; overflow: hidden; z-index: 1;
+      display: grid; grid-template-columns: 1fr 420px;
+      gap: 4rem; align-items: center;
+      max-width: 1280px; margin: 0 auto;
+    }
+    .hero-text { position: relative; z-index: 2; }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .55rem;
+      font-family: 'Manrope', sans-serif; font-size: .72rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 2rem; padding: .38rem 1rem .38rem .55rem;
+      border: 1px solid rgba(232,184,75,.3); border-radius: 50px;
+      background: rgba(232,184,75,.05); width: fit-content;
+    }
+    .hero-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.6)} }
+
+    .hero h1 {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(3.8rem, 7.5vw, 7rem);
+      font-weight: 900; line-height: .96; letter-spacing: -.02em; margin-bottom: 2rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--gold); display: block; }
+    .hero h1 .outline { -webkit-text-stroke: 1.5px rgba(176,106,255,.6); color: transparent; display: block; }
+
+    .hero-sub { font-size: 1.05rem; line-height: 1.85; color: var(--muted); max-width: 480px; margin-bottom: 3rem; font-weight: 300; }
+
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .55rem;
+      padding: .95rem 2.2rem; border-radius: 50px;
+      background: var(--gold); color: var(--plum);
+      font-family: 'Manrope', sans-serif; font-weight: 800; font-size: .9rem;
+      text-transform: uppercase; letter-spacing: .06em;
+      text-decoration: none; border: none;
+      transition: transform .2s, box-shadow .2s; position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
+      transform: translateX(-100%); transition: transform .5s;
+    }
+    .btn-primary:hover::before { transform: translateX(100%); }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(232,184,75,.5); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .55rem;
+      padding: .95rem 2.2rem; border-radius: 50px;
+      border: 1.5px solid rgba(255,255,255,.18);
+      color: var(--white); background: transparent;
+      font-family: 'Manrope', sans-serif; font-weight: 600; font-size: .9rem;
+      text-decoration: none; transition: border-color .2s, background .2s;
+    }
+    .btn-ghost:hover { border-color: var(--violet); background: rgba(176,106,255,.1); }
+
+    .hero-stats {
+      display: flex; gap: 2.5rem; margin-top: 3.5rem;
+      padding-top: 2rem; border-top: 1px solid rgba(255,255,255,.07);
+    }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat-label { font-size: .75rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-top: .25rem; }
+
+    /* hero image */
+    .hero-img-wrap {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 58%;
+      z-index: 1; pointer-events: none;
+    }
+    .hero-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, black 55%);
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, black 55%);
+    }
+
+    /* ── TICKER ── */
+    .ticker { background: var(--gold); color: var(--plum); padding: .75rem 0; overflow: hidden; position: relative; z-index: 2; }
+    .ticker-track { display: flex; gap: 2.5rem; animation: marquee 22s linear infinite; width: max-content; }
+    .ticker-track span { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+    .ticker-track .sep { opacity: .35; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SHARED SECTION STYLES ── */
+    .section-eyebrow {
+      font-family: 'Manrope', sans-serif; font-size: .72rem; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: var(--violet);
+      margin-bottom: .9rem; display: flex; align-items: center; gap: .7rem;
+    }
+    .section-eyebrow::before { content: ""; display: block; width: 28px; height: 1.5px; background: var(--violet); }
+    .section-heading {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.1; margin-bottom: .6rem;
+    }
+    .section-heading em { font-style: italic; color: var(--gold); }
+
+    /* ────────────────────────────────────────────────
+       FEATURES — horizontal cards, wider than tall
+    ──────────────────────────────────────────────── */
+    .features { padding: 5rem 3rem; }
+    .features-inner { max-width: 1100px; margin: 0 auto; }
+    .features-header { margin-bottom: 2.5rem; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.7rem;
+    }
+
+    /* Each card: icon left, text right — short and wide */
+    .feat-card {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 1rem;
+      row-gap: 0.2rem;
+      align-items: start;
+      padding: 1rem 1.2rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      position: relative; overflow: hidden;
+      transition: background .25s, transform .25s, box-shadow .25s;
+    }
+    .feat-card:hover {
+      background: rgba(123,47,190,0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+    }
+    /* gradient top border on hover */
+    .feat-card::after {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--purple), var(--gold));
+      transform: scaleX(0); transform-origin: left; transition: transform .35s ease;
+    }
+    .feat-card:hover::after { transform: scaleX(1); }
+
+    .feat-icon-wrap {
+      grid-column: 1; grid-row: 1 / 3;
+      align-self: center;
+      width: 42px; height: 42px; border-radius: 10px;
+      background: var(--violet-dim); border: 1px solid rgba(176,106,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .feat-card h3 {
+      grid-column: 2; grid-row: 1;
+      font-family: 'Manrope', sans-serif; font-size: .88rem; font-weight: 700;
+      color: var(--white); letter-spacing: .01em; margin: 0;
+      align-self: end;
+    }
+    .feat-card p {
+      grid-column: 2; grid-row: 2;
+      font-size: .78rem; line-height: 1.6; color: var(--muted); margin: 0;
+      align-self: start;
+    }
+    .feat-num { display: none; } /* hidden — not needed in horizontal layout */
+
+    /* ────────────────────────────────────────────────
+       SHOWCASE
+    ──────────────────────────────────────────────── */
+    .showcase { padding: 4rem 3rem 5rem; background: var(--plum-mid); position: relative; overflow: hidden; }
+    .showcase::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--violet), var(--gold), var(--violet), transparent);
+      opacity: .4;
+    }
+    .showcase-inner { max-width: 1100px; margin: 0 auto; }
+    .showcase-header { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+    .showcase-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+    .sc-card {
+      border-radius: var(--radius-lg); overflow: hidden;
+      text-decoration: none; color: inherit; display: block;
+      transition: transform .35s ease, box-shadow .35s ease;
+      background: var(--plum-light); border: 1px solid rgba(255,255,255,.06);
+      position: relative;
+    }
+    .sc-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,.5), 0 0 0 1px rgba(176,106,255,.2); }
+
+    .sc-img-div {
+      width: 100%; height: 160px;
+      background-size: cover; background-position: center;
+      position: relative; overflow: hidden;
+      transition: transform .5s ease;
+    }
+    .sc-card:hover .sc-img-div { transform: scale(1.05); }
+    .sc-img-div::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(30,1,48,1) 0%, rgba(30,1,48,.3) 60%, transparent 100%);
+    }
+    .sc-excerpt {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: .7rem 1rem;
+      font-size: .75rem; line-height: 1.5; font-style: italic;
+      color: rgba(255,255,255,.75);
+      opacity: 0; transform: translateY(4px);
+      transition: opacity .3s, transform .3s; z-index: 2;
+    }
+    .sc-card:hover .sc-excerpt { opacity: 1; transform: translateY(0); }
+
+    .sc-card-body { padding: .85rem 1rem .9rem; }
+    .sc-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+    .sc-genre {
+      font-family: 'Manrope', sans-serif; font-size: .62rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      padding: .18rem .65rem; border-radius: 50px; display: inline-block;
+    }
+    .genre-poem  { background: rgba(61,18,96,.8);  color: #c8a0ff; border: 1px solid rgba(176,106,255,.3); }
+    .genre-story { background: rgba(26,48,96,.8);  color: #8ab4ff; border: 1px solid rgba(138,180,255,.3); }
+    .genre-song  { background: rgba(26,64,48,.8);  color: #6adfb0; border: 1px solid rgba(106,223,176,.3); }
+    .sc-read-time { font-size: .68rem; color: var(--muted); font-family: 'Manrope', sans-serif; }
+    .sc-card-body h3 { font-family: 'EB Garamond', serif; font-size: .92rem; font-weight: 900; line-height: 1.25; margin-bottom: .2rem; }
+    .sc-card-body .sc-author { font-size: .7rem; color: var(--muted); }
+
+    /* ────────────────────────────────────────────────
+       HOW IT WORKS — horizontal cards, wider than tall
+    ──────────────────────────────────────────────── */
+    .how { padding: 5rem 3rem; }
+    .how-inner { max-width: 1100px; margin: 0 auto; }
+
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.7rem;
+      margin-top: 2.5rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      grid-template-rows: auto auto;
+      align-items: center;
+      padding: 1.4rem 1.4rem 1.4rem 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+      transition: background .25s, transform .25s, box-shadow .25s;
+      gap: 0;
+    }
+    .step:hover {
+      background: rgba(123,47,190,0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+    }
+    .step::after {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--purple), var(--violet));
+      transform: scaleX(0); transform-origin: left; transition: transform .35s ease;
+    }
+    .step:hover::after { transform: scaleX(1); }
+
+    .step-num {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      align-self: center;
+      font-family: 'EB Garamond', serif;
+      font-size: 7rem;
+      font-weight: 900;
+      line-height: 1;
+      color: rgba(176,106,255,0.12);
+      user-select: none;
+      pointer-events: none;
+      letter-spacing: -0.04em;
+      text-align: center;
+      padding-left: 0.8rem;
+    }
+
+    .step h3 {
+      grid-column: 2;
+      grid-row: 1;
+      font-family: 'EB Garamond', serif;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--white);
+      margin: 0;
+      align-self: end;
+      padding-right: 1rem;
+    }
+    .step p {
+      grid-column: 2;
+      grid-row: 2;
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0.2rem 0 0;
+      align-self: start;
+      padding-right: 1rem;
+    }
+    .step-ghost-num { display: none; }
+    /* ── QUOTE ── */
+    .quotes { background: var(--gold); padding: 4rem 3rem; color: var(--plum); overflow: hidden; position: relative; }
+    .quotes-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; text-align: center; }
+    .big-q { font-family: 'EB Garamond', serif; font-size: 18rem; line-height: .7; color: rgba(30,1,48,.07); position: absolute; top: -.5rem; left: -1rem; user-select: none; pointer-events: none; }
+    .quote-text { font-family: 'EB Garamond', serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700; font-style: italic; line-height: 1.4; color: var(--plum); margin-bottom: 1.5rem; }
+    .quote-author { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(30,1,48,.55); display: flex; align-items: center; justify-content: center; gap: .8rem; }
+    .quote-author::before, .quote-author::after { content: ""; display: block; width: 24px; height: 1.5px; background: rgba(30,1,48,.3); }
+
+    /* ── CTA ── */
+    .cta-banner { padding: 8rem 3rem; text-align: center; position: relative; overflow: hidden; }
+    .cta-banner::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(123,47,190,.35) 0%, transparent 70%); }
+    .cta-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+    .cta-banner h2 { font-family: 'EB Garamond', serif; font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 900; line-height: 1.0; margin-bottom: 1.4rem; letter-spacing: -.02em; }
+.cta-banner h2 span { color: var(--gold); font-style: italic;}
+    .cta-banner h2 .outline-text { -webkit-text-stroke: 1.5px rgba(176,106,255,.5); color: transparent; }
+    .cta-banner p { font-size: 1.05rem; color: var(--muted); margin-bottom: 2.5rem; line-height: 1.8; font-weight: 300; }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer { background: #0c0016; padding: 3rem; display: flex; flex-direction: column; align-items: center; gap: 1.4rem; border-top: 1px solid rgba(255,255,255,.04); }
+    .footer-logo img { height: 34px; }
+    .footer-links { display: flex; gap: 2rem; list-style: none; flex-wrap: wrap; justify-content: center; }
+    .footer-links a { color: var(--muted); font-size: .8rem; text-decoration: none; font-family: 'Syne', sans-serif; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; transition: color .2s; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy { font-size: .75rem; color: rgba(255,255,255,.2); }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-group > * { opacity: 0; transform: translateY(30px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+    .reveal-group.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:.05s; }
+    .reveal-group.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:.14s; }
+    .reveal-group.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:.23s; }
+    .reveal-group.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:.32s; }
+    .reveal-group.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:.40s; }
+    .reveal-group.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay:.48s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+
+  .hero {
+    grid-template-columns: 1fr;
+    max-width: 900px;
+  }
+
+  .hero-img-wrap {
+    width: 100%;
+    opacity: 0.25;
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 5;
+  }
+}
+    @media (max-width: 860px) {
+      .showcase-cards { grid-template-columns: 1fr 1fr; }
+      .how-steps { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 7rem 1.5rem 4rem; min-height: unset; }
+      .features, .showcase, .how, .quotes, .cta-banner { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .showcase-cards { grid-template-columns: 1fr; }
+      .how-steps { grid-template-columns: 1fr; }
+      .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo"><a href="index.html"><img src="assets/logo.PNG" alt="Soma Side"></a></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="home.html">Stories</a></li>
+      <li><a href="upload.html">Write</a></li>
+      <li id="navAuthItem">
+        <button onclick="showAuthModal('register')"
+          style="background:var(--gold);color:var(--plum);padding:0.4rem 1.1rem;border-radius:50px;
+                 border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;">
+          Join Free
+        </button>
+      </li>
+    </ul>
+    <button class="menu-toggle" id="menuToggle">☰</button>
+  </header>
+
+  <!-- HERO -->
+  <section style="background: var(--plum); position: relative; overflow: hidden;">
+    <div class="hero">
+      <div class="hero-text">
+        <div class="hero-tag reveal"><span class="dot"></span>Africa's Literary Platform</div>
+        <h1 class="reveal" style="transition-delay:.1s">
+          Read.
+          <em>Write.</em>
+          <span class="outline">Feel it.</span>
+        </h1>
+        <p class="hero-sub reveal" style="transition-delay:.2s">
+          Soma Side is where Africa's poets, storytellers, and songwriters share their craft — and where readers find voices they've never heard before.
+        </p>
+        <div class="hero-btns reveal" style="transition-delay:.3s">
+          <a href="home.html" class="btn-primary">Start Reading ✦</a>
+          <button class="btn-ghost" onclick="showAuthModal('register')" style="background:transparent;">Publish Your Story →</button>
+        </div>
+        <div class="hero-stats reveal" style="transition-delay:.45s">
+          <div class="stat-item"><div class="stat-num">54</div><div class="stat-label">Countries</div></div>
+          <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Free to Read</div></div>
+          <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Stories</div></div>
+        </div>
+      </div>
+      <div class="hero-img-wrap">
+        <img src="images/hero.png" alt="Soma Side hero" />
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Poems</span><span class="sep">✦</span><span>Folktales</span><span class="sep">✦</span>
+      <span>Songs</span><span class="sep">✦</span><span>Short Stories</span><span class="sep">✦</span>
+      <span>African Voices</span><span class="sep">✦</span><span>54 Countries</span><span class="sep">✦</span>
+      <span>Free to Read</span><span class="sep">✦</span><span>Free to Publish</span><span class="sep">✦</span>
+      <span>Poems</span><span class="sep">✦</span><span>Folktales</span><span class="sep">✦</span>
+      <span>Songs</span><span class="sep">✦</span><span>Short Stories</span><span class="sep">✦</span>
+      <span>African Voices</span><span class="sep">✦</span><span>54 Countries</span><span class="sep">✦</span>
+      <span>Free to Read</span><span class="sep">✦</span><span>Free to Publish</span><span class="sep">✦</span>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="features-inner">
+      <div class="features-header">
+        <p class="section-eyebrow reveal">Why Soma Side</p>
+        <h2 class="section-heading reveal" style="transition-delay:.1s">Built for Africa's stories. <em>Finally.</em></h2>
+      </div>
+      <div class="features-grid reveal-group">
+        <div class="feat-card">
+          <div class="feat-icon-wrap">📖</div>
+          <h3>Read Without Borders</h3>
+          <p>Poems, folktales, songs, and short stories from every corner of Africa — all in one place, free forever.</p>
+          <span class="feat-num">01</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap">✍🏾</div>
+          <h3>Publish Your Craft</h3>
+          <p>No gatekeepers. Upload your work, reach real readers, and build an audience that celebrates your voice.</p>
+          <span class="feat-num">02</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap">🌍</div>
+          <h3>African First</h3>
+          <p>Not an afterthought. Soma Side exists specifically for African narratives — from Lagos to Nairobi to Dakar.</p>
+          <span class="feat-num">03</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap">💬</div>
+          <h3>Community & Feedback</h3>
+          <p>Like, bookmark, and comment. Writers grow when readers engage. We make that conversation easy.</p>
+          <span class="feat-num">04</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap">🎵</div>
+          <h3>Songs & Poetry</h3>
+          <p>Share song lyrics, spoken word, and poetry — art forms that are the heartbeat of African culture.</p>
+          <span class="feat-num">05</span>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon-wrap">🔍</div>
+          <h3>Discover & Explore</h3>
+          <p>Browse by genre, country, or mood. Find writers you didn't know you needed — stories that feel like home.</p>
+          <span class="feat-num">06</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE -->
+  <section class="showcase">
+    <div class="showcase-inner">
+      <div class="showcase-header reveal">
+        <div>
+          <p class="section-eyebrow">Fresh off the page</p>
+          <h2 class="section-heading">Stories you'll <em>love</em></h2>
+        </div>
+        <a href="home.html" class="btn-ghost" style="font-size:.85rem; padding:.6rem 1.4rem;">Browse all →</a>
+      </div>
+      <div class="showcase-cards reveal-group">
+        <a href="home.html" class="sc-card">
+          <div class="sc-img-div" style="background-image: url('images/six.jpg');">
+            <p class="sc-excerpt">"She carries dust like memory — stubborn, season-less, hers…"</p>
+          </div>
+          <div class="sc-card-body">
+            <div class="sc-meta"><span class="sc-genre genre-poem">Poem</span><span class="sc-read-time">3 min read</span></div>
+            <h3>Harmattan Daughter</h3>
+            <p class="sc-author">Ngozi A. · Lagos, Nigeria</p>
+          </div>
+        </a>
+        <a href="home.html" class="sc-card">
+          <div class="sc-img-div" style="background-image: url('images/two.jpg');">
+            <p class="sc-excerpt">"The sea remembers every promise made on its shore…"</p>
+          </div>
+          <div class="sc-card-body">
+            <div class="sc-meta"><span class="sc-genre genre-story">Story</span><span class="sc-read-time">8 min read</span></div>
+            <h3>The Fisherman's Oath</h3>
+            <p class="sc-author">Kofi M. · Accra, Ghana</p>
+          </div>
+        </a>
+        <a href="home.html" class="sc-card">
+          <div class="sc-img-div" style="background-image: url('images/five.jpg');">
+            <p class="sc-excerpt">"Mama's lullaby stitched into salt and wave…"</p>
+          </div>
+          <div class="sc-card-body">
+            <div class="sc-meta"><span class="sc-genre genre-song">Song</span><span class="sc-read-time">4 min read</span></div>
+            <h3>Mtoto wa Pwani</h3>
+            <p class="sc-author">Amara K. · Mombasa, Kenya</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="how-inner">
+      <p class="section-eyebrow reveal">Simple as a story</p>
+      <h2 class="section-heading reveal" style="transition-delay:.1s">How it <em>works</em></h2>
+      <div class="how-steps reveal-group">
+        <div class="step">
+          <span class="step-ghost-num">1</span>
+          <div class="step-num">1</div>
+          <h3>Create an account</h3>
+          <p>Join for free in seconds. No credit card, no catch — just your name and a love for stories.</p>
+        </div>
+        <div class="step">
+          <span class="step-ghost-num">2</span>
+          <div class="step-num">2</div>
+          <h3>Read or write</h3>
+          <p>Dive into thousands of works, or upload your own poem, story, or song right away.</p>
+        </div>
+        <div class="step">
+          <span class="step-ghost-num">3</span>
+          <div class="step-num">3</div>
+          <h3>Connect & grow</h3>
+          <p>Engage with writers, collect bookmarks, and become part of Africa's growing literary community.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="quotes">
+    <span class="big-q">"</span>
+    <div class="quotes-inner reveal">
+      <p class="quote-text">"I finally found a place where my language, my landscape, my people — are the story, not the footnote."</p>
+      <p class="quote-author">Fatima D., Writer · Nairobi, Kenya</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="cta-inner reveal">
+      <h2>Your story<br><span>belongs</span><span class="outline-text"> here.</span></h2>
+      <p>Join thousands of African writers and readers building something that has never existed before.</p>
+      <div class="cta-btns">
+        <button onclick="showAuthModal('register')" class="btn-primary" style="font-size:1rem; padding:1.1rem 2.6rem;">Join Soma Side — Free ✦</button>
+        <a href="about.html" class="btn-ghost" style="font-size:1rem; padding:1.1rem 2.6rem;">Learn more →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+   <div class="footer-logo"><a href="index.html"><img src="assets/logo.PNG" alt="Soma Side"></a></div>
+    <ul class="footer-links">
+      <li><a href="about.html">About</a></li>
+      <li><a href="home.html">Stories</a></li>
+      <li><a href="upload.html">Write</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 Soma Side. Celebrating African stories.</p>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script>
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .feat-card, .sc-card, .step').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+    });
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal, .reveal-group').forEach(el => io.observe(el));
+
+    // Mobile nav toggle (matches story.html behavior)
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('active');
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        const user = getUser();
+        if (user) {
+          document.getElementById('navAuthItem').innerHTML =
+            `<a href="profile.html" style="color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;">👤 ${user.name.split(' ')[0]}</a>`;
+        }
+      } catch(e) {}
+    });
+  </script>
+</body>
+</html>

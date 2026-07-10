@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flowery Charms Login</title>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif, Haettenschweiler, 'Arial Narrow Bold', sans-serif, sans-serif;
+      background: rgba(236, 140, 228, 0.968); /* 🌺 updated */
+    }
+
+    .flower {
+      position: absolute;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .center {
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .petal {
+      position: absolute;
+      width: 30%;
+      height: 60%;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: center bottom;
+    }
+
+    /* Daisy structure */
+    .petal:nth-child(1) { transform: translate(-50%, -100%) rotate(0deg); }
+    .petal:nth-child(2) { transform: translate(-50%, -100%) rotate(51deg); }
+    .petal:nth-child(3) { transform: translate(-50%, -100%) rotate(102deg); }
+    .petal:nth-child(4) { transform: translate(-50%, -100%) rotate(153deg); }
+    .petal:nth-child(5) { transform: translate(-50%, -100%) rotate(204deg); }
+    .petal:nth-child(6) { transform: translate(-50%, -100%) rotate(255deg); }
+    .petal:nth-child(7) { transform: translate(-50%, -100%) rotate(306deg); }
+
+    /* 🌼 Color Variations */
+    .flower.orange .petal { background: #e40bd2fc; }
+    .flower.orange .center { background: #ffd700; }
+
+    .flower.yellow .petal { background: #8711d0; }
+    .flower.yellow .center { background: #f98a04; }
+
+    .flower.white .petal { background: #ffffff; }
+    .flower.white .center { background: #d400ff; }
+
+    /* 🌬️ bottom sway */
+    @keyframes sway {
+      0%   { transform: translateX(0) translateY(0); }
+      50%  { transform: translateX(8px) translateY(-4px); }
+      100% { transform: translateX(0) translateY(0); }
+    }
+
+    /* fade */
+    .fade-out {
+      animation: fadeOut 2s forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    }
+
+    /* 🔐 Login */
+    .login-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 30px;
+      border-radius: 16px;
+      width: 300px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .login-container h2 {
+      color: white;
+    }
+
+    .login-container input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.7);
+    }
+
+    .login-container button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* 🌿 New Branch */
+.branch {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  z-index: 1;
+  width: 100px; /* adjust width as needed */
+  transform-origin: top center;
+  animation: branchSway 6s ease-in-out infinite;
+  /* Flip the branch upright */
+  transform: scaleY(-1);
+}
+
+/* sway animation */
+@keyframes branchSway {
+  0%   { transform: scaleY(-1) rotate(0deg); }
+  50%  { transform: scaleY(-1) rotate(3deg); }
+  100% { transform: scaleY(-1) rotate(0deg); }
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Flowery Charms 🌼</h2>
+    <input type="text" placeholder="Username"><br>
+    <input type="password" placeholder="Password"><br>
+    <button>Login</button>
+  </div>
+
+  <script>
+  const flowers = [];
+  const MAX_FLOWERS = 25;
+  const groundLevel = window.innerHeight - 60;
+
+  const colors = ["orange", "yellow", "white"];
+
+  
+const NUM_BRANCHES = 5; // total branches
+const branchImage = "/mnt/data/50297fb5-57cc-4d33-b2a6-392817e4fc65.png";
+
+function createBranch(index) {
+  const branch = document.createElement("div");
+  branch.classList.add("branch");
+
+  // 🌿 Edge branches taller, middle shorter
+  const edgeHeight = Math.random() * 180 + 200; // 200-380px
+  const middleHeight = Math.random() * 80 + 120; // 120-200px
+  let height;
+
+  if (index === 0 || index === NUM_BRANCHES - 1) {
+    height = edgeHeight;
+  } else {
+    height = middleHeight;
+  }
+
+  branch.style.height = height + "px";
+
+  // Position branches evenly across screen width
+  const spacing = window.innerWidth / (NUM_BRANCHES + 1);
+  branch.style.left = spacing * (index + 1) - 50 + "px"; // center branch (50 = half width)
+
+  // Slight random scale for variety
+  const scale = 0.8 + Math.random() * 0.4;
+  branch.style.transform = `scaleY(-1) scale(${scale})`;
+
+  // Add image
+  branch.innerHTML = `<img src="${branchImage}" width="100%" height="100%" />`;
+
+  // 🌬️ sway
+  const duration = 5 + Math.random() * 3; // 5-8s
+  branch.style.animation = `branchSway ${duration}s ease-in-out infinite`;
+
+  document.body.appendChild(branch);
+}
+
+// Remove old branches
+document.querySelectorAll('.branch').forEach(b => b.remove());
+
+// Create branches
+for (let i = 0; i < NUM_BRANCHES; i++) {
+  createBranch(i);
+}
+
+  function createFlower() {
+    const flower = document.createElement("div");
+    flower.classList.add("flower");
+
+    // 🌼 random color
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    flower.classList.add(randomColor);
+
+    const size = Math.random() * 30 + 25;
+    flower.style.width = size + "px";
+    flower.style.height = size + "px";
+
+    let x = Math.random() * window.innerWidth;
+    let y = -50;
+
+    flower.style.left = x + "px";
+
+    const speed = Math.random() * 2 + 2;
+
+    // 🌬️ wind strength (each flower different)
+    const wind = (Math.random() - 0.5) * 1.5;
+
+    // petals
+    for (let i = 0; i < 7; i++) {
+      const petal = document.createElement("div");
+      petal.classList.add("petal");
+      flower.appendChild(petal);
+    }
+
+    const center = document.createElement("div");
+    center.classList.add("center");
+    flower.appendChild(center);
+
+    document.body.appendChild(flower);
+    flowers.push(flower);
+
+    function fall() {
+      if (y < groundLevel) {
+        y += speed;
+
+        // 🌬️ apply wind drift
+        x += wind;
+
+        flower.style.top = y + "px";
+        flower.style.left = x + "px";
+
+        requestAnimationFrame(fall);
+      } else {
+        flower.style.top = groundLevel + "px";
+
+        // 🌼 keep slight wind movement at bottom
+        flower.style.animation = `sway ${3 + Math.random()*2}s ease-in-out infinite`;
+      }
+    }
+
+    fall();
+
+    // 🧠 smart cleanup
+    if (flowers.length > MAX_FLOWERS) {
+      const oldFlower = flowers.shift();
+      oldFlower.classList.add("fade-out");
+      setTimeout(() => oldFlower.remove(), 2000);
+    }
+  }
+
+  setInterval(createFlower, 1200);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soma Side | Read</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0;padding:0;box-sizing:border-box;cursor:none !important; }
+    html { scroll-behavior:smooth; }
+    :root {
+      --plum:#1e0130;--plum-mid:#2e0a3f;--purple:#7b2fbe;--violet:#b06aff;--gold:#e8b84b;
+      --white:#ffffff;--muted:rgba(255,255,255,0.6);--muted-lt:rgba(255,255,255,0.32);
+      --glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--radius:20px;
+    }
+
+    body { font-family:'DM Sans',sans-serif;background:var(--plum);color:var(--white);overflow-x:hidden;min-height:100vh; }
+    a { text-decoration:none;color:inherit; }
+
+    /* ── Cursor ── */
+    .cursor { width:14px;height:14px;border-radius:50%;background:var(--gold);position:fixed;top:0;left:0;pointer-events:none;z-index:999999 !important;transform:translate(-50%,-50%);transition:transform 0.12s ease,width 0.2s,height 0.2s,background 0.2s;mix-blend-mode:difference; }
+    .cursor.expand { width:40px;height:40px;background:var(--violet); }
+
+    /* ── Noise overlay ── */
+    body::before { content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:0.035;pointer-events:none;z-index:0; }
+
+    /* ── Navbar ── */
+    .navbar { display:flex;justify-content:space-between;align-items:center;background:rgba(30,1,48,0.88);backdrop-filter:blur(18px);padding:0 2.5rem;height:65px;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.06);box-shadow:0 2px 20px rgba(0,0,0,0.3);transition:opacity 0.4s,transform 0.4s; }
+    .navbar .logo img { height:40px;width:auto;object-fit:contain; }
+    .nav-links { display:flex;align-items:center;gap:2rem;list-style:none; }
+    .nav-links a { color:rgba(255,255,255,0.65);font-family:'Syne',sans-serif;font-weight:600;font-size:0.88rem;letter-spacing:0.05em;padding:0.4rem 0;position:relative;transition:color 0.2s;text-decoration:none; }
+    .nav-links a::after { content:"";position:absolute;bottom:-2px;left:0;width:0;height:2px;background:var(--gold);transition:width 0.3s ease; }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    .nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+    .menu-toggle { display:none;font-size:1.5rem;color:#fff;background:none;border:none; }
+
+    /* ── Story cover ── */
+    .story-cover-banner { min-height:380px;display:flex;align-items:flex-end;padding:0 2rem;position:relative;overflow:hidden;background:var(--plum-mid);transition:min-height 0.5s ease; }
+    .story-cover-banner::after { content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--plum) 20%,rgba(30,1,48,0.5) 60%,transparent 100%);z-index:1; }
+    .story-cover-banner::before { content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(232,184,75,0.04) 40px,rgba(232,184,75,0.04) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(232,184,75,0.04) 40px,rgba(232,184,75,0.04) 41px);z-index:1; }
+    .story-cover-inner { max-width:760px;margin:0 auto;width:100%;padding-bottom:3rem;position:relative;z-index:2; }
+    .story-main-title { font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:900;color:var(--white);line-height:1.1;margin:0.7rem 0 1rem; }
+    .story-meta-row { display:flex;flex-wrap:wrap;gap:1rem;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:600;color:var(--muted);letter-spacing:0.04em; }
+    .story-meta-row a.author-link { color: var(--muted); transition: color 0.2s;}
+.story-meta-row a.author-link:hover { color: var(--gold);}
+
+    /* ── Divider ── */
+    .gold-divider { height:3px;background:repeating-linear-gradient(90deg,var(--gold) 0,var(--gold) 18px,transparent 18px,transparent 36px);opacity:0.35;transition:opacity 0.4s; }
+
+    /* ── Story body ── */
+    .story-body-wrap { max-width:760px;margin:0 auto;padding:2.5rem 2rem 5rem;animation:fadeUp 0.55s ease both; }
+    .story-actions-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;transition:opacity 0.4s; }
+    .back-btn { font-family:'Syne',sans-serif;font-weight:700;font-size:0.83rem;color:var(--gold);letter-spacing:0.05em;display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1.1rem;border:1.5px solid rgba(232,184,75,0.35);border-radius:50px;transition:background 0.2s,color 0.2s; }
+    .back-btn:hover { background:var(--gold);color:var(--plum); }
+    .story-action-btns { display:flex;gap:0.6rem; }
+    .like-btn,.bookmark-btn,.reader-btn { background:var(--glass);border:1.5px solid var(--glass-border);border-radius:50px;padding:0.48rem 1.1rem;display:flex;align-items:center;gap:0.35rem;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:600;color:var(--muted);transition:border-color 0.2s,background 0.2s,color 0.2s; }
+    .like-btn:hover { border-color:#ff6b8a;color:#ff6b8a;background:rgba(255,107,138,0.08); }
+    .like-btn.liked { color:#ff6b8a;border-color:#ff6b8a; }
+    .bookmark-btn:hover { border-color:var(--gold);color:var(--gold);background:rgba(232,184,75,0.08); }
+    .bookmark-btn.active { background:var(--gold);color:var(--plum);border-color:var(--gold); }
+    .reader-btn { border-color:rgba(176,106,255,0.3);color:var(--violet); }
+    .reader-btn:hover { background:rgba(176,106,255,0.1);border-color:var(--violet); }
+    .reader-btn.active { background:var(--violet);color:var(--plum);border-color:var(--violet); }
+    .share-btn {
+  background: var(--glass);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 50px;
+  padding: 0.48rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.share-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(232,184,75,0.08);
+}
+.resume-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(176,106,255,0.1);
+  border: 1px solid rgba(176,106,255,0.3);
+  border-radius: 14px;
+  padding: 0.9rem 1.2rem;
+  margin-bottom: 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--white);
+}
+.resume-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+.resume-btn {
+  background: var(--violet);
+  color: var(--plum);
+  border: none;
+  border-radius: 50px;
+  padding: 0.4rem 1.1rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.resume-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  padding: 0.2rem 0.5rem;
+}
+.resume-dismiss:hover { color: var(--white); }
+
+
+    /* ── Story text ── */
+    .story-text { font-family:'DM Sans',sans-serif;font-size:1.08rem;line-height:2.05;color:rgba(255,255,255,0.84);background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:2.8rem 3rem;position:relative;overflow:hidden;transition:all 0.5s ease; }
+    .story-text::before { content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--violet),var(--gold));border-radius:var(--radius) var(--radius) 0 0;transition:opacity 0.4s; }
+    .story-text p { margin-bottom:1.5rem; }
+    .story-text p:last-child { margin-bottom:0; }
+
+    /* ── Related ── */
+    #relatedStories { max-width:760px;margin:0 auto;padding:0 2rem 5rem;animation:fadeUp 0.55s 0.15s ease both;transition:opacity 0.4s; }
+    .related-heading { font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--white);margin-bottom:1.5rem; }
+    .related-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem; }
+    .related-card { background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;display:block;transition:transform 0.25s,border-color 0.25s,box-shadow 0.25s;position:relative; }
+    .related-card::before { content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--violet));opacity:0;transition:opacity 0.3s; }
+    .related-card:hover { transform:translateY(-5px);border-color:rgba(176,106,255,0.3);box-shadow:0 16px 40px rgba(0,0,0,0.35); }
+    .related-card:hover::before { opacity:1; }
+    .related-cover { height:95px; }
+    .related-info { padding:0.85rem 1rem 1rem; }
+    .related-info h4 { font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--white);margin:0.3rem 0 0.2rem;line-height:1.3; }
+    .related-info p { font-size:0.76rem;color:var(--muted-lt); }
+
+    /* ── Tags ── */
+    .tag { display:inline-block;padding:0.18rem 0.65rem;border-radius:50px;font-family:'Syne',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase; }
+    .tag.poem  { background:rgba(176,106,255,0.2);color:#c8a0ff; }
+    .tag.story { background:rgba(100,150,255,0.15);color:#8ab4ff; }
+    .tag.song  { background:rgba(100,220,160,0.15);color:#6adfb0; }
+    .tag-thriller  { background:rgba(255,80,80,.14);   color:#ff9999; }
+.tag-mystery   { background:rgba(150,100,255,.14);  color:#c8a0ff; }
+.tag-scifi     { background:rgba(0,200,255,.14);    color:#80e8ff; }
+.tag-drama     { background:rgba(255,160,80,.14);   color:#ffc080; }
+.tag-satire    { background:rgba(200,255,100,.14);  color:#c8ff80; }
+.tag-children  { background:rgba(255,220,0,.14);    color:#ffe566; }
+
+    /* ── Empty state ── */
+    .empty-state { text-align:center;padding:5rem 2rem;color:var(--muted); }
+    .empty-state p { margin-bottom:1rem;font-size:1.2rem; }
+    .empty-state a { color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;border:1.5px solid rgba(232,184,75,0.35);padding:0.5rem 1.3rem;border-radius:50px;transition:background 0.2s,color 0.2s; }
+    .empty-state a:hover { background:var(--gold);color:var(--plum); }
+
+    /* ════════════════════════════════════════════
+       READER MODE
+    ════════════════════════════════════════════ */
+    body.reader-mode .navbar { opacity:0;pointer-events:none;transform:translateY(-100%); }
+
+    /* Hamburger stays fixed and clickable in reader mode */
+    body.reader-mode #menuToggle {
+      display: block;
+      pointer-events: all;
+      opacity: 1;
+      position: fixed;
+      top: 1rem;
+      right: 1.2rem;
+      z-index: 10001;
+      background: rgba(46,10,63,0.9);
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(176,106,255,0.3);
+      color: #fff;
+      font-size: 1.5rem;
+    }
+
+    /* ── Chapter navigation ── */
+.chapter-nav-top { display:flex; align-items:center; gap:0.8rem; margin-bottom:1.5rem;
+  padding:0.8rem 1rem; background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.07); border-radius:12px; }
+.chapter-nav-label { font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+.chapter-dropdown { flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  color:var(--white); border-radius:8px; padding:0.4rem 0.8rem;
+  font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600; outline:none; }
+.chapter-heading { margin-bottom:1.5rem; padding-bottom:1rem;
+  border-bottom:1px solid rgba(255,255,255,0.07); }
+.chapter-label { font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700;
+  letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:0.4rem; }
+.chapter-title { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:700;
+  color:var(--white); line-height:1.3; }
+.chapter-nav-bottom { display:flex; align-items:center; justify-content:space-between;
+  margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.07); gap:1rem; }
+.chapter-prev-btn, .chapter-next-btn { padding:0.6rem 1.4rem; border-radius:50px;
+  border:1.5px solid rgba(255,255,255,0.15); background:transparent; color:var(--muted);
+  font-family:'Syne',sans-serif; font-weight:700; font-size:0.82rem;
+  transition:border-color 0.2s, color 0.2s, background 0.2s; }
+.chapter-prev-btn:hover:not(:disabled), .chapter-next-btn:hover:not(:disabled) {
+  border-color:var(--gold); color:var(--gold); background:rgba(232,184,75,0.08); }
+.chapter-prev-btn:disabled, .chapter-next-btn:disabled { opacity:0.3; }
+.chapter-counter { font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700;
+  color:var(--muted); letter-spacing:0.06em; }
+    /* Dropdown anchors to top of screen in reader mode */
+    body.reader-mode #navLinks.active {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(30,1,48,0.97);
+      backdrop-filter: blur(20px);
+      padding: 1.2rem 1.5rem 1.5rem;
+      gap: 0.8rem;
+      border-bottom: 1px solid rgba(176,106,255,0.2);
+      z-index: 10000;
+    }
+
+    body.reader-mode .story-cover-banner { min-height:120px; }
+    body.reader-mode .gold-divider { opacity:0; }
+    body.reader-mode .story-actions-top .back-btn { opacity:0;pointer-events:none; }
+    body.reader-mode #relatedStories { opacity:0;pointer-events:none; }
+
+    body.reader-mode .story-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.22rem;
+      line-height: 2.2;
+      color: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.02);
+      border-color: rgba(255,255,255,0.05);
+      padding: 3.5rem 4rem;
+      max-width: 680px;
+      margin: 0 auto;
+      letter-spacing: 0.01em;
+    }
+    body.reader-mode .story-text::before { opacity:0; }
+    body.reader-mode .story-body-wrap { padding-top:1.5rem;padding-bottom:8rem; }
+
+    /* ── Floating reader bar ── */
+    .reader-bar {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: rgba(46,10,63,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(176,106,255,0.3);
+      border-radius: 20px;
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      z-index: 9999;
+      transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+      max-width: calc(100vw - 2rem);
+      width: max-content;
+    }
+    body.reader-mode .reader-bar { transform: translateX(-50%) translateY(0); }
+
+    .reader-bar-label { font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;color:var(--violet);text-transform:uppercase; }
+    .reader-bar-divider { width:1px;height:16px;background:rgba(255,255,255,0.12);flex-shrink:0; }
+    .reader-font-btn { background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:0.3rem 0.75rem;color:var(--muted);font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;transition:background 0.2s,color 0.2s,border-color 0.2s;letter-spacing:0.03em; }
+    .reader-font-btn:hover, .reader-font-btn.active { background:rgba(176,106,255,0.15);color:var(--violet);border-color:var(--violet); }
+    .reader-exit-btn { padding:0.4rem 1.1rem;border-radius:50px;background:transparent;border:1.5px solid rgba(232,184,75,0.35);color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;transition:background 0.2s,color 0.2s; }
+    .reader-exit-btn:hover { background:var(--gold);color:var(--plum); }
+
+    /* Font size options in reader mode */
+    body.reader-mode .story-text.rf-sm { font-size:1.05rem; }
+    body.reader-mode .story-text.rf-md { font-size:1.22rem; }
+    body.reader-mode .story-text.rf-lg { font-size:1.42rem; }
+
+
+    /* ── Animations ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+
+    /* ── Mobile ── */
+    @media(max-width:640px) {
+      .story-text { padding:1.8rem 1.5rem; }
+      body.reader-mode .story-text { padding:2rem 1.5rem; }
+      .navbar { padding:0 1.2rem; }
+      .nav-links { flex-direction:column;max-height:0;overflow:hidden;width:100%;position:absolute;top:65px;left:0;background:#1e0130;padding:0 1.5rem;transition:max-height 0.3s ease,padding 0.3s ease;gap:0; }
+      .nav-links.active { max-height:400px;padding:1rem 1.5rem; }
+      .nav-links li { padding:0.5rem 0; }
+      .menu-toggle { display:block; }
+      .story-main-title { font-size:2rem; }
+      .related-grid { grid-template-columns:1fr 1fr; }
+      .reader-bar { bottom:1rem;padding:0.5rem 0.75rem;gap:0.4rem; }
+    }
+    @media(max-width:400px) {
+      .reader-font-btn { padding:0.3rem 0.55rem;font-size:0.7rem; }
+      .reader-bar-label { font-size:0.7rem; }
+      .reader-exit-btn { padding:0.35rem 0.8rem;font-size:0.74rem; }
+      .related-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body data-page="story">
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo"><a href="index.html"><img src="assets/logo.PNG" alt="Soma Side"></a></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="home.html">Stories</a></li>
+      <li><a href="upload.html">Write</a></li>
+      <li id="navAuthItem">
+        <button onclick="showAuthModal('register')"
+          style="background:var(--gold);color:var(--plum);padding:0.4rem 1.1rem;border-radius:50px;
+                 border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;">
+          Join Free
+        </button>
+      </li>
+    </ul>
+    <button class="menu-toggle" id="menuToggle">☰</button>
+  </header>
+
+  <div id="storyContainer"></div>
+  <div class="gold-divider" style="margin:0;"></div>
+  <div id="relatedStories"></div>
+
+  <!-- Reader mode floating bar -->
+  <div class="reader-bar" id="readerBar">
+    <span class="reader-bar-label">📖 Reader Mode</span>
+    <div class="reader-bar-divider"></div>
+    <button class="reader-font-btn" data-size="rf-sm">A</button>
+    <button class="reader-font-btn active" data-size="rf-md">A+</button>
+    <button class="reader-font-btn" data-size="rf-lg">A++</button>
+    <div class="reader-bar-divider"></div>
+    <button class="reader-exit-btn" id="readerExitBtn">✕ Exit</button>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth-modal.js"></script>
+  <script src="js/story.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    // ── Cursor ──
+    const cursor = document.getElementById('cursor')
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px'
+      cursor.style.top  = e.clientY + 'px'
+    })
+    document.addEventListener('mouseover', e => {
+      if (e.target.closest('a,button,.related-card,.story-card')) cursor.classList.add('expand')
+      else cursor.classList.remove('expand')
+    })
+
+    
+
+    // ── Navbar auth ──
+    document.addEventListener('DOMContentLoaded', () => {
+  const user = getUser()
+  if (user) {
+    document.getElementById('navAuthItem').innerHTML =
+      `<a href="profile.html" style="color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;">👤 ${user.name.split(' ')[0]}</a>`
+  }
+})
+
+    // ── Reader Mode ──────────────────────────────────────────
+    let readerActive = false
+    let currentFontSize = 'rf-md'
+
+    function enterReaderMode() {
+      readerActive = true
+      document.body.classList.add('reader-mode')
+      const btn = document.getElementById('readerModeBtn')
+      if (btn) btn.classList.add('active')
+      localStorage.setItem('somaside_reader', '1')
+      window.scrollTo({ top: document.querySelector('.story-body-wrap')?.offsetTop - 20 || 0, behavior: 'smooth' })
+    }
+
+    function exitReaderMode() {
+      readerActive = false
+      document.body.classList.remove('reader-mode')
+      const btn = document.getElementById('readerModeBtn')
+      if (btn) btn.classList.remove('active')
+      localStorage.removeItem('somaside_reader')
+    }
+
+    document.getElementById('readerExitBtn').addEventListener('click', exitReaderMode)
+
+    document.querySelectorAll('.reader-font-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const size = btn.dataset.size
+        const storyText = document.querySelector('.story-text')
+        if (storyText) {
+          storyText.classList.remove('rf-sm','rf-md','rf-lg')
+          storyText.classList.add(size)
+        }
+        document.querySelectorAll('.reader-font-btn').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        currentFontSize = size
+      })
+    })
+
+    window.initReaderBtn = () => {
+      const btn = document.getElementById('readerModeBtn')
+      if (!btn) return
+      btn.addEventListener('click', () => {
+        readerActive ? exitReaderMode() : enterReaderMode()
+      })
+      if (localStorage.getItem('somaside_reader')) enterReaderMode()
+    }
+
+    // ── Reading Progress (chapter-aware) ───────────────────────
+    function trackReadingProgress(storyId) {
+      let scrollTimer
+      window.addEventListener('scroll', () => {
+        clearTimeout(scrollTimer)
+        scrollTimer = setTimeout(() => {
+          const scrolled  = window.scrollY
+          const maxScroll = document.body.scrollHeight - window.innerHeight
+          if (maxScroll <= 0) return
+          const percent = Math.round((scrolled / maxScroll) * 100)
+          saveReadingProgress(storyId, currentChapterIdx, percent)
+        }, 1500)
+      })
+    }
+
+    document.addEventListener('DOMContentLoaded', initStory)
+  </script>
+</body>
+</html>

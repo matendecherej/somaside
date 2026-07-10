@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soma Side | Write</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --plum:#1e0130; --plum-mid:#2e0a3f; --plum-light:#3a1050;
+  --purple:#7b2fbe; --violet:#b06aff; --gold:#e8b84b; --gold-dim:rgba(232,184,75,.15);
+  --white:#ffffff; --muted:rgba(255,255,255,.60); --muted-lt:rgba(255,255,255,.28);
+  --glass:rgba(255,255,255,.035); --border:rgba(255,255,255,.07);
+  --border-focus:rgba(176,106,255,.6); --radius-sm:10px; --radius:18px; --radius-lg:24px;
+}
+body { font-family:'DM Sans',sans-serif; background:var(--plum); color:var(--white); min-height:100vh; }
+body::before { content:""; position:fixed; inset:0; opacity:.025; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+body::after { content:""; position:fixed; top:-200px; left:50%; transform:translateX(-50%);
+  width:700px; height:500px; background:radial-gradient(ellipse,rgba(123,47,190,.18) 0%,transparent 70%);
+  pointer-events:none; z-index:0; }
+
+/* ── Navbar ── */
+.navbar { position:sticky; top:0; z-index:100; height:64px; display:flex; align-items:center;
+  justify-content:space-between; padding:0 2rem; backdrop-filter:blur(24px);
+  background:rgba(30,1,48,.88); border-bottom:1px solid var(--border); }
+.logo img { height:38px; display:block; }
+.nav-links { display:flex; align-items:center; gap:2rem; list-style:none; }
+.nav-links a { color:rgba(255,255,255,0.65); font-family:'Syne',sans-serif; font-weight:600;
+  font-size:0.88rem; letter-spacing:0.05em; padding:0.4rem 0; position:relative;
+  transition:color 0.2s; text-decoration:none; }
+.nav-links a::after { content:""; position:absolute; bottom:-2px; left:0; width:0; height:2px;
+  background:var(--gold); transition:width 0.3s ease; }
+.nav-links a:hover, .nav-links a.active { color:var(--gold); }
+.nav-links a:hover::after, .nav-links a.active::after { width:100%; }
+.menu-toggle { display:none; font-size:1.5rem; color:#fff; background:none; border:none; }
+@media(max-width:540px) {
+  .nav-links { display:none; flex-direction:column; position:absolute; top:64px; left:0; right:0;
+    background:#1e0130; padding:1rem 1.5rem; gap:0.5rem;
+    border-bottom:1px solid rgba(255,255,255,0.06); z-index:999999; }
+  .nav-links.active { display:flex; }
+  .menu-toggle { display:block; }
+}
+
+/* ── Page header ── */
+.page-header { text-align:center; padding:4rem 1.5rem 2.5rem; position:relative; z-index:1; }
+.page-header h1 { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,5vw,3.8rem);
+  font-weight:900; letter-spacing:-.02em; margin-bottom:.75rem; line-height:1.1; }
+.page-header h1 em { font-style:italic; color:var(--gold); }
+.page-header p { max-width:560px; margin:0 auto; color:var(--muted); font-size:1.05rem; line-height:1.75; }
+
+/* ── Layout ── */
+.layout { max-width:1360px; margin:0 auto; padding:0 2rem 5rem;
+  display:grid; grid-template-columns:1.15fr .85fr; gap:1.75rem; position:relative; z-index:1; }
+@media(max-width:960px) { .layout { grid-template-columns:1fr; } }
+
+/* ── Cards ── */
+.card { background:var(--glass); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:2rem; backdrop-filter:blur(20px); }
+.card-label { font-family:'Syne',sans-serif; font-size:.72rem; font-weight:800; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--gold); margin-bottom:1.75rem;
+  display:flex; align-items:center; gap:.5rem; }
+.card-label::after { content:""; flex:1; height:1px; background:var(--border); }
+
+/* ── Form elements ── */
+.form-group { margin-bottom:1.5rem; }
+.form-group label { display:block; margin-bottom:.5rem; font-family:'Syne',sans-serif;
+  font-size:.75rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+input[type="text"], textarea {
+  width:100%; background:rgba(255,255,255,.038); border:1px solid var(--border);
+  color:var(--white); border-radius:var(--radius-sm); padding:.875rem 1rem;
+  font-size:.95rem; font-family:'DM Sans',sans-serif; transition:border-color .2s,background .2s; outline:none; }
+input[type="text"]::placeholder, textarea::placeholder { color:var(--muted-lt); }
+input[type="text"]:focus, textarea:focus { border-color:var(--border-focus); background:rgba(176,106,255,.06); }
+textarea { resize:vertical; line-height:1.7; }
+#excerptField { min-height:110px; }
+.char-count { text-align:right; margin-top:.4rem; font-size:.78rem; color:var(--muted-lt); transition:color .2s; }
+.char-count.warn { color:#ffb86a; } .char-count.over { color:#ff7070; }
+
+/* ── Genre pills ── */
+.genre-grid { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:.25rem; }
+.genre-pill { padding:.6rem 1.1rem; border-radius:50px; border:1px solid var(--border);
+  background:rgba(255,255,255,.03); color:var(--muted); cursor:pointer;
+  transition:border-color .2s,color .2s,background .2s,transform .15s;
+  font-family:'Syne',sans-serif; font-size:.8rem; font-weight:700; letter-spacing:.03em; }
+.genre-pill:hover { border-color:rgba(232,184,75,.4); color:var(--gold); background:var(--gold-dim); transform:translateY(-1px); }
+.genre-pill.active { background:var(--gold); color:var(--plum); border-color:var(--gold); transform:translateY(-1px); }
+
+/* ── Draft toolbar ── */
+.draft-toolbar { display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  flex-wrap:wrap; padding:1rem 1.25rem; background:rgba(255,255,255,.025);
+  border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:1.5rem; }
+.draft-status { font-size:.82rem; color:var(--muted); font-family:'Syne',sans-serif; font-weight:600;
+  transition:color .3s,opacity .3s; display:flex; align-items:center; gap:.4rem; }
+.draft-status .dot { width:6px; height:6px; border-radius:50%; background:var(--muted-lt); flex-shrink:0; }
+.draft-status.ok { color:#65ffb0; } .draft-status.ok .dot { background:#65ffb0; }
+.draft-status.warn { color:#ffcc66; } .draft-status.warn .dot { background:#ffcc66; }
+.draft-actions { display:flex; gap:.5rem; flex-wrap:wrap; }
+.draft-btn { display:flex; align-items:center; gap:.4rem; border:1px solid var(--border);
+  border-radius:50px; padding:.5rem .95rem; background:rgba(255,255,255,.05); color:var(--muted);
+  cursor:pointer; font-family:'Syne',sans-serif; font-size:.78rem; font-weight:700; letter-spacing:.03em;
+  transition:background .2s,color .2s,border-color .2s,transform .15s; }
+.draft-btn:hover { background:rgba(255,255,255,.09); color:var(--white); border-color:rgba(255,255,255,.15); transform:translateY(-1px); }
+.draft-btn.danger { border-color:rgba(255,90,90,.2); color:rgba(255,130,130,.75); }
+.draft-btn.danger:hover { background:rgba(255,90,90,.12); color:#ff9090; border-color:rgba(255,90,90,.35); }
+.draft-btn svg { width:14px; height:14px; flex-shrink:0; opacity:.8; }
+
+/* ── Chapters ── */
+.chapters-header { display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:1.2rem; flex-wrap:wrap; gap:0.6rem; }
+.chapters-title { font-family:'Syne',sans-serif; font-size:.75rem; font-weight:700;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+.add-chapter-btn { display:inline-flex; align-items:center; gap:.4rem;
+  padding:.45rem 1rem; border-radius:50px; border:1.5px solid rgba(232,184,75,.35);
+  background:transparent; color:var(--gold); font-family:'Syne',sans-serif;
+  font-size:.78rem; font-weight:700; cursor:pointer; transition:background .2s,color .2s; }
+.add-chapter-btn:hover { background:var(--gold); color:var(--plum); }
+
+.chapter-item { background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--radius); padding:1.4rem; margin-bottom:1rem; position:relative; }
+.chapter-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.chapter-badge { font-family:'Syne',sans-serif; font-size:.72rem; font-weight:800;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--violet); }
+.chapter-remove-btn { background:rgba(255,80,80,.1); border:1px solid rgba(255,80,80,.2);
+  color:#ff8f8f; border-radius:50%; width:26px; height:26px; display:flex;
+  align-items:center; justify-content:center; font-size:.8rem; cursor:pointer;
+  transition:background .2s; line-height:1; }
+.chapter-remove-btn:hover { background:rgba(255,80,80,.25); }
+
+/* ── Submit button ── */
+.submit-btn { width:100%; border:none; border-radius:50px; background:var(--gold); color:var(--plum);
+  padding:1.05rem; font-family:'Syne',sans-serif; font-size:.92rem; font-weight:800;
+  letter-spacing:.04em; cursor:pointer; transition:transform .2s,opacity .2s,box-shadow .2s; margin-top:1.75rem; }
+.submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(232,184,75,.25); }
+.submit-btn:active { transform:translateY(0); }
+
+/* ── Feedback ── */
+.feedback, .form-feedback { display:none; padding:.9rem 1rem; border-radius:var(--radius-sm);
+  margin-bottom:1.25rem; font-family:'Syne',sans-serif; font-size:.84rem; font-weight:700; }
+.feedback.success, .form-feedback.success { display:block; background:rgba(50,200,120,.1);
+  border:1px solid rgba(50,200,120,.2); color:#67ffad; }
+.feedback.error, .form-feedback.error { display:block; background:rgba(255,90,90,.1);
+  border:1px solid rgba(255,90,90,.2); color:#ff8888; }
+
+/* ── Cover upload ── */
+.label-hint { font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:400;
+  text-transform:none; letter-spacing:0; color:var(--muted-lt); margin-left:.35rem; }
+.cover-upload-zone { position:relative; border:1.5px dashed rgba(255,255,255,.12);
+  border-radius:var(--radius-sm); overflow:hidden; transition:border-color .2s,background .2s; cursor:pointer; }
+.cover-upload-zone:hover { border-color:rgba(232,184,75,.4); background:rgba(232,184,75,.04); }
+.cover-upload-zone.drag-over { border-color:var(--gold); background:rgba(232,184,75,.07); }
+.cover-upload-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; z-index:2; }
+.cover-upload-ui { display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:.5rem; padding:2rem 1rem; text-align:center; pointer-events:none; }
+.cover-upload-icon { width:36px; height:36px; color:var(--muted-lt); margin-bottom:.25rem; }
+.cover-upload-label { font-family:'Syne',sans-serif; font-size:.82rem; font-weight:700; color:var(--muted); }
+.cover-upload-sub { font-size:.78rem; color:var(--muted-lt); }
+.cover-preview-wrap { position:relative; }
+.cover-preview-wrap img { width:100%; max-height:200px; object-fit:cover; display:block; border-radius:calc(var(--radius-sm) - 2px); }
+.cover-remove-btn { position:absolute; top:.6rem; right:.6rem; z-index:3; width:30px; height:30px;
+  border-radius:50%; border:none; background:rgba(20,0,32,.75); color:var(--white); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:background .2s,transform .15s; backdrop-filter:blur(6px); }
+.cover-remove-btn:hover { background:rgba(255,80,80,.75); transform:scale(1.1); }
+.cover-remove-btn svg { width:14px; height:14px; }
+
+/* ── Preview ── */
+.preview-cover { height:170px; border-radius:14px; background:linear-gradient(135deg,var(--purple) 0%,var(--violet) 100%);
+  display:flex; align-items:flex-end; padding:1.25rem 1.5rem; margin-bottom:1.5rem; overflow:hidden; position:relative; }
+.preview-cover::before { content:""; position:absolute; inset:0;
+  background:linear-gradient(to top,rgba(30,1,48,.55),transparent 60%); }
+#previewCoverTitle { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900; line-height:1.15; position:relative; z-index:1; }
+.preview-genre-tag { display:inline-flex; align-items:center; padding:.3rem .85rem; border-radius:50px;
+  margin-bottom:.9rem; font-family:'Syne',sans-serif; font-size:.68rem; font-weight:800;
+  letter-spacing:.08em; text-transform:uppercase; }
+.tag-story,.preview-genre-tag.story { background:rgba(90,130,255,.14); color:#8ab4ff; }
+.tag-poem,.preview-genre-tag.poem   { background:rgba(176,106,255,.14); color:#c8a0ff; }
+.tag-song,.preview-genre-tag.song   { background:rgba(100,220,160,.14); color:#6adfb0; }
+.tag-folklore,.preview-genre-tag.folklore { background:rgba(232,184,75,.14); color:var(--gold); }
+.tag-romance,.preview-genre-tag.romance   { background:rgba(255,106,176,.14); color:#ff9edb; }
+.tag-fantasy,.preview-genre-tag.fantasy   { background:rgba(90,200,255,.14); color:#80d8ff; }
+#previewTitle { font-family:'Playfair Display',serif; font-size:1.75rem; font-weight:700; line-height:1.2; margin-bottom:.5rem; }
+#previewAuthor { color:var(--muted); font-size:.9rem; margin-bottom:1rem; }
+#previewExcerpt { color:rgba(255,255,255,.75); font-size:.93rem; line-height:1.8; margin-bottom:1.5rem;
+  font-style:italic; border-left:2px solid var(--gold); padding-left:.85rem; }
+.preview-divider { height:1px; background:var(--border); margin:1.25rem 0; }
+#previewContent { color:rgba(255,255,255,.78); font-size:.93rem; line-height:2; }
+#previewContent p { margin-bottom:1rem; }
+
+/* Chapter selector in preview */
+.preview-chapter-selector { display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem; }
+.preview-chapter-selector label { font-family:'Syne',sans-serif; font-size:.7rem; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted-lt); white-space:nowrap; }
+#previewChapterSelect { flex:1; background:rgba(255,255,255,.05); border:1px solid var(--border);
+  color:var(--white); border-radius:var(--radius-sm); padding:.45rem .75rem;
+  font-family:'Syne',sans-serif; font-size:.8rem; font-weight:600; outline:none;
+  transition:border-color .2s; }
+#previewChapterSelect:focus { border-color:var(--border-focus); }
+.tag-thriller  { background:rgba(255,80,80,.14);   color:#ff9999; }
+.tag-mystery   { background:rgba(150,100,255,.14);  color:#c8a0ff; }
+.tag-scifi     { background:rgba(0,200,255,.14);    color:#80e8ff; }
+.tag-drama     { background:rgba(255,160,80,.14);   color:#ffc080; }
+.tag-satire    { background:rgba(200,255,100,.14);  color:#c8ff80; }
+.tag-children  { background:rgba(255,220,0,.14);    color:#ffe566; }
+
+*, *::before, *::after { cursor: none !important; }
+.cursor {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--gold); position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 999999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor.expand { width: 40px; height: 40px; background: var(--violet); }
+@media(max-width:520px) { .card { padding:1.5rem; } .draft-toolbar { flex-direction:column; align-items:flex-start; } }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<header class="navbar">
+  <div class="logo"><a href="index.html"><img src="assets/logo.PNG" alt="Soma Side"></a></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="home.html">Stories</a></li>
+    <li><a href="upload.html" class="active">Write</a></li>
+    <li><a href="profile.html">Profile</a></li>
+  </ul>
+  <button class="menu-toggle" id="menuToggle">☰</button>
+</header>
+
+<section class="page-header">
+  <h1>Share Your <em>Story</em></h1>
+  <p>Publish poems, songs, short stories, and literary works for readers across Africa.</p>
+</section>
+
+<div class="layout">
+
+  <!-- ── Left: Form ── -->
+  <div class="card">
+    <div class="card-label">Write &amp; Publish</div>
+
+    <div class="draft-toolbar">
+      <div class="draft-status" id="draftStatus">
+        <span class="dot"></span>
+        <span id="draftStatusText">No saved draft</span>
+      </div>
+      <div class="draft-actions">
+        <button type="button" class="draft-btn" id="saveDraftBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save draft
+        </button>
+        <button type="button" class="draft-btn" id="loadDraftBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Load draft
+        </button>
+        <button type="button" class="draft-btn danger" id="clearDraftBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <div class="feedback" id="formFeedback"></div>
+
+    <form id="uploadForm" novalidate>
+      <input type="hidden" id="genreInput">
+
+      <div class="form-group">
+        <label for="titleField">Title</label>
+        <input type="text" id="titleField" placeholder="The title of your work" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="authorField">Author name</label>
+        <input type="text" id="authorField" placeholder="Your pen name" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+  <label>Genre</label>
+  <div class="genre-grid">
+    <button type="button" class="genre-pill" data-genre="Story">Story</button>
+    <button type="button" class="genre-pill" data-genre="Poem">Poem</button>
+    <button type="button" class="genre-pill" data-genre="Song">Song</button>
+    <button type="button" class="genre-pill" data-genre="Folklore">Folklore</button>
+    <button type="button" class="genre-pill" data-genre="Romance">Romance</button>
+    <button type="button" class="genre-pill" data-genre="Fantasy">Fantasy</button>
+    <button type="button" class="genre-pill" data-genre="Thriller">Thriller</button>
+    <button type="button" class="genre-pill" data-genre="Mystery">Mystery</button>
+    <button type="button" class="genre-pill" data-genre="SciFi">Sci-Fi</button>
+    <button type="button" class="genre-pill" data-genre="Drama">Drama</button>
+    <button type="button" class="genre-pill" data-genre="Satire">Satire</button>
+    <button type="button" class="genre-pill" data-genre="Children">Children</button>
+  </div>
+</div>
+
+<!-- ── Rating ── -->
+<div class="form-group">
+  <label>Content Rating <span class="label-hint">(who is this for?)</span></label>
+  <div class="genre-grid" id="ratingGrid">
+    <button type="button" class="genre-pill rating-pill active" data-rating="G">G — All ages</button>
+    <button type="button" class="genre-pill rating-pill" data-rating="PG">PG — Guidance</button>
+    <button type="button" class="genre-pill rating-pill" data-rating="PG-13">PG-13</button>
+    <button type="button" class="genre-pill rating-pill" data-rating="16+">16+</button>
+    <button type="button" class="genre-pill rating-pill" data-rating="18+">18+</button>
+  </div>
+  <input type="hidden" id="ratingInput" value="G">
+</div>
+      </div>
+
+      <div class="form-group">
+        <label for="excerptField">Excerpt</label>
+        <textarea id="excerptField" placeholder="A short teaser for your work…"></textarea>
+        <div class="char-count" id="excerptCount">0 / 160</div>
+      </div>
+
+      <!-- ── Chapters ── -->
+      <div class="form-group">
+        <div class="chapters-header">
+          <span class="chapters-title">Chapters</span>
+          <button type="button" class="add-chapter-btn" id="addChapterBtn">+ Add Chapter</button>
+        </div>
+        <div id="chaptersContainer"></div>
+      </div>
+
+      <!-- ── PDF Upload ── -->
+<div class="form-group">
+  <label for="pdfUploadInput">
+    Upload PDF
+    <span class="label-hint">(optional · PDF only · max 10 MB)</span>
+  </label>
+  <div class="cover-upload-zone" id="pdfUploadZone">
+    <input type="file" id="pdfUploadInput" accept="application/pdf">
+    <div class="cover-upload-ui" id="pdfUploadUI">
+      <svg class="cover-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <line x1="9" y1="15" x2="15" y2="15"/>
+      </svg>
+      <p class="cover-upload-label">Click to upload a PDF</p>
+      <p class="cover-upload-sub">Your story will be extracted from the PDF automatically</p>
+    </div>
+    <div id="pdfSelectedWrap" style="display:none; padding:1rem; display:none; align-items:center; gap:0.8rem;">
+      <span style="font-size:1.5rem;">📄</span>
+      <span id="pdfFileName" style="font-family:'Syne',sans-serif; font-size:0.85rem; color:rgba(255,255,255,0.8); flex:1;"></span>
+      <button type="button" id="pdfRemoveBtn" style="background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.2);color:#ff8f8f;border-radius:50px;padding:0.2rem 0.7rem;font-size:0.75rem;font-family:'Syne',sans-serif;font-weight:700;">Remove</button>
+    </div>
+  </div>
+  <p style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-top:0.5rem;font-family:'Syne',sans-serif;">
+    💡 PDF content will be imported into Chapter 1. You can edit it before publishing.
+  </p>
+</div>
+
+      <!-- ── Cover image ── -->
+      <div class="form-group">
+        <label for="coverImageInput">
+          Cover image
+          <span class="label-hint">(optional · JPG, PNG, WebP · max 5 MB)</span>
+        </label>
+        <div class="cover-upload-zone" id="coverUploadZone">
+          <input type="file" id="coverImageInput" accept="image/jpeg,image/png,image/webp">
+          <div class="cover-upload-ui" id="coverUploadUI">
+            <svg class="cover-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <p class="cover-upload-label">Click to upload or drag &amp; drop</p>
+            <p class="cover-upload-sub">Appears on your story card in the feed</p>
+          </div>
+          <div class="cover-preview-wrap" id="coverPreviewWrap" style="display:none;">
+            <img id="coverPreviewEl" src="" alt="Cover preview">
+            <button type="button" class="cover-remove-btn" id="coverRemoveBtn" aria-label="Remove cover">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit" class="submit-btn">Publish to Soma Side ✦</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── Right: Preview ── -->
+  <div class="card">
+    <div class="card-label">Live Preview</div>
+
+    <div class="preview-cover" id="previewCover">
+      <img id="previewCoverEl" src="" alt=""
+        style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;border-radius:14px;">
+      <h2 id="previewCoverTitle">Your title…</h2>
+    </div>
+
+    <span id="previewGenreTag" class="preview-genre-tag tag-story">Story</span>
+    <span id="previewRatingTag" style="
+  display:inline-flex; align-items:center; padding:0.3rem 0.75rem; border-radius:50px;
+  margin-bottom:0.9rem; margin-left:0.4rem;
+  font-family:'Syne',sans-serif; font-size:0.68rem; font-weight:800;
+  letter-spacing:0.08em; text-transform:uppercase;
+  background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.12);
+">G</span>
+    <h2 id="previewTitle">Your title appears here</h2>
+    <div id="previewAuthor">by You</div>
+    <p id="previewExcerpt">Your excerpt will appear here…</p>
+    <div class="preview-divider"></div>
+
+    <!-- Chapter selector -->
+    <div class="preview-chapter-selector">
+      <label for="previewChapterSelect">Chapter</label>
+      <select id="previewChapterSelect">
+        <option value="0">Chapter 1</option>
+      </select>
+    </div>
+
+    <div id="previewContent">
+      <p style="color:var(--muted-lt);font-style:italic;">Your content will appear here as you type…</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/upload.js"></script>
+<script src="js/drafts.js"></script>
+
+<script>
+// ── Cover drag-and-drop ───────────────────────────────────────
+(function initCoverUpload() {
+  const input     = document.getElementById('coverImageInput')
+  const zone      = document.getElementById('coverUploadZone')
+  const ui        = document.getElementById('coverUploadUI')
+  const previewW  = document.getElementById('coverPreviewWrap')
+  const previewEl = document.getElementById('coverPreviewEl')
+  const removeBtn = document.getElementById('coverRemoveBtn')
+  if (!input || !zone) return
+
+  function showPreview(file) {
+    if (!file || !file.type.startsWith('image/')) return
+    const url = URL.createObjectURL(file)
+    previewEl.src = url
+    ui.style.display = 'none'
+    previewW.style.display = 'block'
+    const cover = document.getElementById('previewCoverEl')
+    if (cover) { cover.src = url; cover.style.display = 'block' }
+  }
+
+  function clearPreview() {
+    input.value = ''
+    previewEl.src = ''
+    previewW.style.display = 'none'
+    ui.style.display = 'flex'
+    const cover = document.getElementById('previewCoverEl')
+    if (cover) cover.style.display = 'none'
+  }
+
+  input.addEventListener('change', () => { if (input.files[0]) showPreview(input.files[0]) })
+  removeBtn?.addEventListener('click', (e) => { e.stopPropagation(); clearPreview() })
+  zone.addEventListener('dragover',  (e) => { e.preventDefault(); zone.classList.add('drag-over') })
+  zone.addEventListener('dragleave', ()  => zone.classList.remove('drag-over'))
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault(); zone.classList.remove('drag-over')
+    const file = e.dataTransfer?.files[0]
+    if (file) {
+      const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files
+      showPreview(file)
+    }
+  })
+})()
+
+// ── Draft status helper ───────────────────────────────────────
+function showDraftStatus(msg, type = '') {
+  const wrapper = document.getElementById('draftStatus')
+  const label   = document.getElementById('draftStatusText')
+  if (!wrapper || !label) return
+  const time = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+  label.textContent = `${msg} · ${time}`
+  wrapper.className = 'draft-status ' + type
+  clearTimeout(wrapper._timer)
+  wrapper._timer = setTimeout(() => { wrapper.className = 'draft-status' }, 4000)
+}
+
+function triggerPreviewRefresh() {
+  ;['titleField','authorField','excerptField'].forEach(id => {
+    document.getElementById(id)?.dispatchEvent(new Event('input'))
+  })
+}
+
+// ── Init ──────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  initUpload()
+
+  // Wire chapter preview selector
+  document.getElementById('previewChapterSelect')?.addEventListener('change', function() {
+    previewChapterIdx = +this.value
+    renderPreviewChapter()
+  })
+
+  // Restore draft (skip in edit mode)
+  const isEdit = new URLSearchParams(location.search).get('edit')
+  if (!isEdit) {
+    const draft = await loadDraft()
+    if (draft) { applyDraftToForm(draft); showDraftStatus('Draft restored', 'ok') }
+    startAutosave()
+  }
+
+  document.getElementById('saveDraftBtn')?.addEventListener('click', () => saveDraft())
+  document.getElementById('loadDraftBtn')?.addEventListener('click', async () => {
+    const d = await loadDraft()
+    if (!d) { showDraftStatus('No saved draft found', 'warn'); return }
+    applyDraftToForm(d); showDraftStatus('Draft loaded', 'ok')
+  })
+  document.getElementById('clearDraftBtn')?.addEventListener('click', async () => {
+    if (!confirm('Delete this draft?')) return
+    await clearDraft(); showDraftStatus('Draft cleared', 'warn')
+  })
+  document.getElementById('menuToggle')?.addEventListener('click', () =>
+    document.getElementById('navLinks').classList.toggle('active'))
+    const cursor = document.getElementById('cursor')
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px'
+  cursor.style.top  = e.clientY + 'px'
+})
+document.addEventListener('mouseover', e => {
+  if (e.target.closest('a, button, .genre-pill, .draft-btn, .chapter-item'))
+    cursor.classList.add('expand')
+  else cursor.classList.remove('expand')
+})
+})
+
+window.addEventListener('beforeunload', () => {
+  if (!new URLSearchParams(location.search).get('edit')) saveDraft(true)
+})
+</script>
+
+</body>
+</html>

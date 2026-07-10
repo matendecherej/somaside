@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soma Side | About</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* =====================
+       RESET & TOKENS
+    ===================== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --plum:        #1e0130;
+      --plum-mid:    #2e0a3f;
+      --plum-deep:   #240132;
+      --purple:      #7b2fbe;
+      --violet:      #b06aff;
+      --gold:        #e8b84b;
+      --white:       #ffffff;
+      --muted:       rgba(255,255,255,0.6);
+      --radius:      20px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--plum);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* =====================
+       NAVBAR
+    ===================== */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30,1,48,0.85);
+      backdrop-filter: blur(18px);
+      padding: 0 2.5rem;
+      height: 65px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    .navbar .logo img {
+      height: 40px;
+      width: auto;
+      max-width: 160px;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.75);
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      padding: 0.5rem 0;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--gold); }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after { width: 100%; }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.6rem;
+      color: #fff;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    /* =====================
+       SHARED SECTION
+    ===================== */
+    .section {
+      padding: 6rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .section-inner.flip .section-text { order: 1; }
+    .section-inner.flip .section-img  { order: 2; }
+
+    .section-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.55;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-body {
+      font-size: 1rem;
+      line-height: 1.85;
+      opacity: 0.75;
+      max-width: 480px;
+    }
+
+    /* IMAGE PLACEHOLDER */
+    .img-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  overflow: hidden;        /* ← add this: clips image to rounded corners */
+}
+
+    .ph-icon { font-size: 2.5rem; opacity: 0.5; }
+
+    /* GOLD DIVIDER */
+    .gold-divider {
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg, var(--gold) 0, var(--gold) 18px,
+        transparent 18px, transparent 36px
+      );
+      opacity: 0.45;
+    }
+
+    /* =====================
+       OUR STORY
+    ===================== */
+    .story-section { background: var(--plum-mid); }
+    .story-section .section-label { color: #c8a8ff; opacity: 1; }
+    .story-section .section-title { color: #e8d5ff; }
+
+    .story-quote {
+      margin-top: 1.8rem;
+      padding-left: 1.2rem;
+      border-left: 3px solid var(--purple);
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: #c8b4ff;
+      line-height: 1.7;
+    }
+
+    /* =====================
+       HERO — deep plum
+    ===================== */
+    .hero-section {
+      background: var(--plum);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::after {
+      content: "";
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      border: 1px solid rgba(123,47,190,0.14);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+
+    .hero-section::before {
+      content: "";
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,47,190,0.2), transparent 70%);
+      top: -100px; right: -100px;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      padding: 0.35rem 1rem;
+      border: 1px solid rgba(232,184,75,0.3);
+      border-radius: 50px;
+    }
+
+    .hero-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 5.5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.3rem;
+    }
+
+    .hero-text h1 em { font-style: italic; color: var(--violet); }
+
+    .hero-text p {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--muted);
+      max-width: 460px;
+    }
+
+    .hero-img-stack {
+      position: relative;
+      height: 460px;
+    }
+
+    .img-main {
+      position: absolute;
+      width: 75%; height: 75%;
+      right: 0; top: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
+
+    .img-accent {
+      position: absolute;
+      width: 50%; height: 50%;
+      left: 0; bottom: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border: 3px solid var(--plum);
+    }
+
+    .img-main .img-placeholder,
+    .img-accent .img-placeholder { aspect-ratio: unset; height: 100%; }
+
+    /* =====================
+       WHY SOMA SIDE — recolored to plum palette
+    ===================== */
+    .why-section { background: var(--plum-mid); color: var(--white); }
+    .why-section .section-label { color: var(--gold); opacity: 1; }
+    .why-section .section-title { color: var(--white); }
+    .why-section .section-body  { color: var(--muted); opacity: 1; }
+
+    .why-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+
+    .pill {
+  padding: 0.4rem 1.1rem;
+  border-radius: 50px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: rgba(176,106,255,0.15);
+  color: #c8a0ff;
+  border: 1px solid rgba(176,106,255,0.25);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  display: inline-block; /* anchors need this for padding to apply correctly */
+}
+
+.pill:hover { background: var(--violet); color: var(--plum); transform: translateY(-2px); }
+
+    .why-section .img-placeholder {
+      background: linear-gradient(135deg, var(--purple), var(--violet));
+      border-color: rgba(176,106,255,0.3);
+      color: #fff;
+    }
+
+    /* =====================
+       MEET THE TEAM
+    ===================== */
+    .team-section { background: var(--plum-deep); padding: 6rem 2rem; }
+
+    .team-inner { max-width: 1100px; margin: 0 auto; }
+
+    .team-header { text-align: center; margin-bottom: 3.5rem; }
+
+    .team-header .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      color: #fff;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8rem;
+    }
+
+    .team-card {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      cursor: pointer;
+    }
+
+    .team-card-ph {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      background: linear-gradient(160deg, #3a1060, #5f3dc4);
+    }
+
+    .team-card-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+
+    .team-card:hover .team-card-img { transform: scale(1.06); }
+
+    .team-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(26,1,38,0.96) 45%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.5rem;
+    }
+
+    .team-role {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c8b4ff;
+      margin-bottom: 0.3rem;
+    }
+
+    .team-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .team-bio {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.5;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .team-card:hover .team-bio { max-height: 80px; }
+
+    /* =====================
+       INSPIRATION — recolored to plum palette
+    ===================== */
+    .inspo-section { background: var(--plum); color: var(--white); }
+    .inspo-section .section-label { color: var(--gold); opacity: 1; }
+    .inspo-section .section-title { color: var(--white); }
+    .inspo-section .section-body  { color: var(--muted); opacity: 1; }
+
+    .inspo-section .img-placeholder {
+      background: linear-gradient(135deg, var(--purple), var(--violet));
+      border-color: rgba(176,106,255,0.3);
+      color: #fff;
+    }
+
+    .inspo-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stat-item .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* =====================
+       CONTACT
+    ===================== */
+    .contact-section { background: var(--plum-mid); text-align: center; }
+    .contact-section .section-label { color: var(--gold); opacity: 1; }
+    .contact-inner { max-width: 600px; margin: 0 auto; }
+    .contact-inner .section-body { margin: 0 auto; }
+    .contact-email {
+      display: inline-block;
+      margin: 1.6rem 0 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 0.2rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .contact-email:hover { color: var(--gold); }
+    .contact-socials {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .contact-socials a {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding: 0.6rem 1.3rem;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .contact-socials a:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(232,184,75,0.08);
+      transform: translateY(-2px);
+    }
+
+    /* =====================
+       SCROLL REVEAL
+    ===================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+
+    /* =====================
+       RESPONSIVE
+    ===================== */
+    @media (max-width: 900px) {
+      .hero-inner,
+      .section-inner,
+      .section-inner.flip { grid-template-columns: 1fr; gap: 2.5rem; }
+      .section-inner.flip .section-text { order: 2; }
+      .section-inner.flip .section-img  { order: 1; }
+      .hero-img-stack { height: 300px; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .section { padding: 4rem 1.2rem; }
+      .hero-section { padding: 3rem 1.2rem; min-height: auto; }
+      .hero-img-stack { height: 240px; }
+      .team-grid { grid-template-columns: 1fr; }
+      .navbar { padding: 0 1.2rem; }
+
+      .nav-links {
+        flex-direction: column;
+        max-height: 0;
+        overflow: hidden;
+        width: 100%;
+        position: absolute;
+        top: 65px; left: 0;
+        background: #1e0130;
+        padding: 0 1.5rem;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+        gap: 0;
+      }
+
+      .nav-links.active { max-height: 400px; padding: 1rem 1.5rem; }
+      .nav-links li { padding: 0.5rem 0; }
+      .menu-toggle { display: block; }
+    }
+    *, *::before, *::after { cursor: none !important; }
+
+.cursor {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+}
+.cursor.expand { width: 40px; height: 40px; background: var(--violet); }
+  </style>
+</head>
+<body data-page="about">
+<div class="cursor" id="cursor"></div>
+  <!-- NAVBAR -->
+  <header class="navbar">
+<div class="logo"><a href="index.html"><img src="assets/logo.PNG" alt="Soma Side"></a></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html" class="active">About</a></li>
+      <li><a href="home.html">Stories</a></li>
+      <li><a href="upload.html">Write</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <button class="menu-toggle" id="menuToggle">☰</button>
+  </header>
+
+  <!-- 1. OUR STORY -->
+  <section class="section story-section">
+    <div class="section-inner">
+      <div class="section-img reveal">
+        <div class="img-placeholder" style="background:linear-gradient(135deg,#4a1a6e,#7b4fc4);">
+  <img src="assets/about-3.png" alt="Description of the image" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+</div>
+      </div>
+      <div class="section-text reveal">
+        <p class="section-label">Our Story</p>
+        <h2 class="section-title">Born from a belief that every voice deserves a stage.</h2>
+        <p class="section-body">Soma Side began as a simple question: why are African narratives so hard to find online? We built the answer, a platform where folktales sit beside modern poetry, and traditional songs echo alongside contemporary prose, all while being a little closer to our roots than before.</p>
+        <blockquote class="story-quote">"Storytelling is the thread that stitches communities together."</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  <!-- 2. ABOUT SOMA SIDE (HERO) -->
+  <section class="hero-section">
+    <div class="hero-inner">
+      <div class="hero-text reveal">
+        <span class="eyebrow">Who we are</span>
+        <h1>Where African <em>stories</em> find their home.</h1>
+        <p>Soma Side is a living archive and creative stage, a place where poets, storytellers, and songwriters across Africa publish, connect, and resonate.</p>
+      </div>
+      <div class="hero-img-stack reveal">
+        <div class="img-main">
+          <div class="img-placeholder" style="background:linear-gradient(135deg,#4a1a6e,#7b4fc4);">
+  <img src="assets/about-5.png" alt="Description of the image" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+</div>
+        </div>
+        <div class="img-accent">
+          <div class="img-placeholder" style="background:linear-gradient(135deg,#4a1a6e,#7b4fc4);">
+  <img src="assets/about-4.png" alt="Description of the image" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+ <!-- 3. WHY SOMA SIDE -->
+<section class="section why-section">
+  <div class="section-inner flip">
+    <div class="section-text reveal">
+      <p class="section-label">Why Soma Side</p>
+      <h2 class="section-title">A platform built for the storytellers, the curious and the dreamers.</h2>
+      <p class="section-body">No noise. No clutter. Just stories that matter, surfaced for readers who care. We put the work first, always.</p>
+      <div class="why-pills">
+        <a href="home.html" class="pill">All genres</a>
+        <a href="home.html?genre=Story" class="pill">Story</a>
+        <a href="home.html?genre=Poem" class="pill">Poem</a>
+        <a href="home.html?genre=Song" class="pill">Song</a>
+        <a href="home.html?genre=Folklore" class="pill">Folklore</a>
+        <a href="home.html?genre=Romance" class="pill">Romance</a>
+        <a href="home.html?genre=Fantasy" class="pill">Fantasy</a>
+        <a href="home.html?genre=Thriller" class="pill">Thriller</a>
+        <a href="home.html?genre=Mystery" class="pill">Mystery</a>
+        <a href="home.html?genre=SciFi" class="pill">Sci-Fi</a>
+        <a href="home.html?genre=Drama" class="pill">Drama</a>
+        <a href="home.html?genre=Satire" class="pill">Satire</a>
+        <a href="home.html?genre=Children" class="pill">Children</a>
+      </div>
+    </div>
+    <div class="section-img reveal">
+      <div class="img-placeholder" style="background:linear-gradient(135deg,#4a1a6e,#7b4fc4);">
+        <img src="assets/about-6.png" alt="Description of the image" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- 4. MEET THE TEAM -->
+  <section class="team-section">
+    <div class="team-inner">
+      <div class="team-header reveal">
+        <p class="section-label" style="color:#c8b4ff;opacity:1;">The people behind the platform</p>
+        <h2 class="section-title">Meet the Team</h2>
+      </div>
+      <div class="team-grid">
+  <div class="team-card reveal">
+  <img src="assets/about-1.png" alt="Jewel Matendechere" class="team-card-img">
+  <div class="team-overlay">
+    <p class="team-role">CEO & Co-Founder</p>
+    <h3 class="team-name">Jewel Matendechere</h3>
+    <p class="team-bio">Passionate about preserving African stories and giving writers a stage they deserve.</p>
+  </div>
+</div>
+<div class="team-card reveal">
+  <img src="assets/about-2.png" alt="Michael Khayo" class="team-card-img">
+  <div class="team-overlay">
+    <p class="team-role">Lead Content Curator & Co-Founder</p>
+    <h3 class="team-name">Michael Khayo</h3>
+    <p class="team-bio">Ensures a diverse, high-quality storytelling experience for every reader.</p>
+  </div>
+</div>
+  </div>
+</div>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  <!-- 5. INSPIRATION -->
+  <section class="section inspo-section">
+    <div class="section-inner">
+      <div class="section-img reveal">
+       <div class="img-placeholder" style="background:linear-gradient(135deg,var(--purple),var(--violet));">
+  <img src="assets/about-7.png" alt="Description of the image" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+</div>
+      </div>
+      <div class="section-text reveal">
+        <p class="section-label">Inspiration</p>
+        <h2 class="section-title">Stories that move you, from voices that live it.</h2>
+        <p class="section-body">Every poem carries a heartbeat. Every story holds a world. Every song holds a melody. Soma Side curates writing that doesn't just inform — it transforms.</p>
+        <div class="inspo-stats">
+          <div class="stat-item">
+            <div class="stat-num">1,200+</div>
+            <div class="stat-label">Works published</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">40+</div>
+            <div class="stat-label">African countries</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">3</div>
+            <div class="stat-label">Genres</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-divider"></div>
+
+  <!-- 6. CONTACT -->
+  <section class="section contact-section">
+    <div class="contact-inner reveal">
+      <p class="section-label">Get In Touch</p>
+      <h2 class="section-title">We'd love to hear from you.</h2>
+      <p class="section-body">Questions, feedback, or just want to say hello? Reach out through any of the channels below.</p>
+      <a href="mailto:hello@somaside.com" class="contact-email">jeweldonah1@gmail.com</a>
+      <div class="contact-socials">
+        <a href="#" aria-label="Twitter">🐦 Twitter</a>
+        <a href="#" aria-label="Instagram">📸 Instagram</a>
+        <a href="#" aria-label="Facebook">📘 Facebook</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Mobile nav
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('active');
+    });
+
+    // Scroll reveal — handles both on-screen and off-screen elements
+    const reveals = document.querySelectorAll('.reveal');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0 });
+
+    reveals.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        el.classList.add('visible'); // already on screen
+      } else {
+        observer.observe(el); // watch for scroll
+      }
+    });
+    // Cursor
+const cursor = document.getElementById('cursor')
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px'
+  cursor.style.top  = e.clientY + 'px'
+})
+document.querySelectorAll('a, button, .pill, .team-card').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('expand'))
+  el.addEventListener('mouseleave', () => cursor.classList.remove('expand'))
+})
+  </script>
+
+</body>
+</html>
