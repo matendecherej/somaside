@@ -1,6 +1,6 @@
 // ============================================================
 //  drafts.js — Save, load, and clear story drafts
-//  Strategy: localStorage always (instant), API if logged in (persistent across devices)
+//  Strategy: localStorage only (no backend /drafts endpoint exists)
 // ============================================================
 
 const DRAFT_KEY = 'somaside_draft'
@@ -40,45 +40,22 @@ async function saveDraft(silent = false) {
   if (hash === lastSavedHash && silent) return // no change, skip silent autosave
   lastSavedHash = hash
 
-  // 1. Always save to localStorage
+  // Save to localStorage (only storage mechanism — no backend /drafts route exists)
   localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
-
-  // 2. If logged in, also save to API
-  if (getToken()) {
-    try {
-      await apiRequest('/drafts', 'POST', draft)
-    } catch (err) {
-      // API save failed — localStorage backup is still intact, don't alarm user
-      console.warn('Draft API save failed, localStorage backup saved:', err.message)
-    }
-  }
 
   if (!silent) showDraftStatus('Draft saved ✓', 'ok')
 }
 
 // ── Load draft ────────────────────────────────────────────────
 async function loadDraft() {
-  let draft = null
+  const local = localStorage.getItem(DRAFT_KEY)
+  if (!local) return null
 
-  // 1. Try API first if logged in (most up-to-date across devices)
-  if (getToken()) {
-    try {
-      const remote = await apiRequest('/drafts', 'GET')
-      if (remote && remote.title) draft = remote
-    } catch (err) {
-      console.warn('Could not fetch remote draft:', err.message)
-    }
+  try {
+    return JSON.parse(local)
+  } catch (_) {
+    return null
   }
-
-  // 2. Fall back to localStorage
-  if (!draft) {
-    const local = localStorage.getItem(DRAFT_KEY)
-    if (local) {
-      try { draft = JSON.parse(local) } catch (_) {}
-    }
-  }
-
-  return draft
 }
 
 // ── Restore draft into the form ───────────────────────────────
@@ -123,9 +100,6 @@ function applyDraftToForm(draft) {
 // ── Clear draft ───────────────────────────────────────────────
 async function clearDraft() {
   localStorage.removeItem(DRAFT_KEY)
-  if (getToken()) {
-    try { await apiRequest('/drafts', 'DELETE') } catch (_) {}
-  }
 }
 
 // ── Auto-save loop ────────────────────────────────────────────
