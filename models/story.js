@@ -49,4 +49,12 @@ rating: {
   createdAt:  { type: Date, default: Date.now }
 })
 
+UserSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret.password
+    return ret
+  }
+})
+
 module.exports = mongoose.model('Story', StorySchema)

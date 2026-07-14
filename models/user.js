@@ -59,4 +59,13 @@ UserSchema.methods.comparePassword = function (candidate) {
   return bcrypt.compare(candidate, this.password)
 }
 
+UserSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret.password
+    return ret
+  }
+})
+
+
 module.exports = mongoose.model('User', UserSchema)
