@@ -49,7 +49,7 @@ rating: {
   createdAt:  { type: Date, default: Date.now }
 })
 
-UserSchema.set('toJSON', {
+StorySchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => {
     delete ret.password
