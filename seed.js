@@ -14,7 +14,7 @@ const stories = [
     country:    'Nigeria',
     city:       'Lagos',
     genre:      'Poem',
-    coverImage: 'http://localhost:3000/images/six.jpg',
+    coverImage: 'https://somaside-6ycm.onrender.com/images/six.jpg',
     excerpt:    'She carries dust like memory — stubborn, season-less, entirely her own. The wind named her before her mother could.',
     content: `She carries dust like memory —
 stubborn, season-less, entirely her own.
@@ -42,7 +42,7 @@ and everything, everything belongs.`,
     country:    'Ghana',
     city:       'Accra',
     genre:      'Story',
-    coverImage: 'http://localhost:3000/images/two.jpg',
+    coverImage: 'https://somaside-6ycm.onrender.com/images/two.jpg',
     excerpt:    "The sea remembers every promise made on its shore. Kwame learned this the morning his father did not return.",
     content: `The sea remembers every promise made on its shore.
 
@@ -68,7 +68,7 @@ He has never missed a morning.`,
     country:    'Kenya',
     city:       'Mombasa',
     genre:      'Song',
-    coverImage: 'http://localhost:3000/images/five.jpg',
+    coverImage: 'https://somaside-6ycm.onrender.com/images/five.jpg',
     excerpt:    "Mama's lullaby stitched into salt and wave. Sung at dusk when the dhows return and the children stop playing to listen.",
     content: `[Verse 1]
 Mtoto wa pwani, lala sasa
@@ -106,7 +106,7 @@ The water knows your name`,
     country:    'Senegal',
     city:       'Dakar',
     genre:      'Poem',
-    coverImage: 'http://localhost:3000/images/one.jpg',
+    coverImage: 'https://somaside-6ycm.onrender.com/images/one.jpg',
     excerpt:    'In our house, grief was a particular shade of blue. Not the sky — never the sky. Something deeper.',
     content: `In our house, grief was a particular shade of blue.
 Not the sky — never the sky.
@@ -142,7 +142,7 @@ to set it down.`,
     country:    'Nigeria',
     city:       'Ibadan',
     genre:      'Story',
-    coverImage: 'http://localhost:3000/images/three.jpg',
+    coverImage: 'https://somaside-6ycm.onrender.com/images/three.jpg',
     excerpt:    "Nobody could make egusi soup like Aunty Bisi. Not because of the ingredients. It was the way she stirred.",
     content: `Nobody could make egusi soup like Aunty Bisi.
 
@@ -174,7 +174,7 @@ without a single word.`,
     country:    'Kenya',
     city:       'Nairobi',
     genre:      'Song',
-    coverImage: 'http://localhost:3000/images/four.jpg',
+    coverImage: 'https://somaside-6ycm.onrender.com/images/four.jpg',
     excerpt:    "A song for the hands that build without blueprints. For the welders and cobblers who make something from nothing.",
     content: `[Verse 1]
 Under the open sky I work
@@ -211,7 +211,7 @@ Fierce sun, we remain`,
     country:    'Mali',
     city:       'Bamako',
     genre:      'Story',
-    coverImage: 'http://localhost:3000/images/three.jpg',
+    coverImage: 'https://somaside-6ycm.onrender.com/images/three.jpg',
     excerpt:    "The elders say the baobab grows upside down. Our grandmother said this was not a punishment but a choice.",
     content: `The elders say the baobab grows upside down — its roots reaching for heaven, its branches buried in earth.
 
