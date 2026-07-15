@@ -1,16 +1,20 @@
 // ============================================================
-//  home.js — Story feed, genre filters, likes & bookmarks
+//  home.js — Story feed, genre filters, search, likes & bookmarks
 //  Now connected to the real backend API
 // ============================================================
+
+let currentStories = []   // cache of the currently-fetched (genre-filtered) stories
+let currentSearchTerm = ''
 
 function initHome() {
   const params = new URLSearchParams(window.location.search);
   const genreParam = params.get('genre') || 'All';
   renderFeed(genreParam);
   initFilters(genreParam);
+  initSearch();
 }
 
-// ── Render ───────────────────────────────────────────────────
+// ── Render (fetches from API — genre-based) ─────────────────
 async function renderFeed(activeGenre) {
   const grid = document.getElementById("storyGrid");
   if (!grid) return;
@@ -21,29 +25,73 @@ async function renderFeed(activeGenre) {
     const genre   = activeGenre === "All" ? "" : activeGenre;
     const stories = await fetchStories(genre);
 
-    if (!stories.length) {
-      grid.innerHTML = `<p style="color:rgba(255,255,255,0.4); text-align:center; grid-column:1/-1; padding:3rem;">No stories yet — be the first to write one!</p>`;
-      return;
-    }
+    currentStories = stories // cache for client-side search filtering
 
-    const user = getUser();
-
-    grid.innerHTML = stories.map(story => storyCard(story)).join("");
-
-
-
-    grid.querySelectorAll(".story-card").forEach(card => {
-      card.addEventListener("click", () => {
-        window.location.href = `story.html?id=${card.dataset.id}`;
-      });
-    });
-
-    observeCards();
+    renderCards(applySearchFilter(currentStories, currentSearchTerm));
 
   } catch (err) {
     grid.innerHTML = `<p style="color:#ff8f8f; text-align:center; grid-column:1/-1; padding:3rem;">Could not load stories. Is the server running?</p>`;
     console.error(err);
   }
+}
+
+// ── Render cards into the grid (no fetch — pure render) ──────
+function renderCards(stories) {
+  const grid = document.getElementById("storyGrid");
+  if (!grid) return;
+
+  if (!stories.length) {
+    const message = currentSearchTerm
+      ? `No stories match "${currentSearchTerm}".`
+      : "No stories yet — be the first to write one!";
+    grid.innerHTML = `<p class="search-no-results">${message}</p>`;
+    return;
+  }
+
+  grid.innerHTML = stories.map(story => storyCard(story)).join("");
+
+  grid.querySelectorAll(".story-card").forEach(card => {
+    card.addEventListener("click", () => {
+      window.location.href = `story.html?id=${card.dataset.id}`;
+    });
+  });
+
+  observeCards();
+}
+
+// ── Search filtering (client-side, matches title or author) ──
+function applySearchFilter(stories, term) {
+  if (!term) return stories;
+  const q = term.toLowerCase();
+  return stories.filter(story =>
+    (story.title  && story.title.toLowerCase().includes(q)) ||
+    (story.author && story.author.toLowerCase().includes(q))
+  );
+}
+
+function initSearch() {
+  const input    = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('searchClearBtn');
+  if (!input) return;
+
+  let debounceTimer = null;
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      currentSearchTerm = input.value.trim();
+      clearBtn.classList.toggle('visible', currentSearchTerm.length > 0);
+      renderCards(applySearchFilter(currentStories, currentSearchTerm));
+    }, 200); // small debounce so it doesn't re-render on every keystroke
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    input.value = '';
+    currentSearchTerm = '';
+    clearBtn.classList.remove('visible');
+    renderCards(applySearchFilter(currentStories, currentSearchTerm));
+    input.focus();
+  });
 }
 
 // ── Card HTML ─────────────────────────────────────────────────
@@ -79,7 +127,7 @@ function initFilters(activeGenre = 'All') {
     btn.addEventListener("click", () => {
       container.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      renderFeed(btn.dataset.genre);
+      renderFeed(btn.dataset.genre); // re-fetches from API for the new genre; search term persists via currentSearchTerm
       // Keep the URL in sync so the filter is shareable/bookmarkable
       const url = new URL(window.location);
       btn.dataset.genre === 'All' ? url.searchParams.delete('genre') : url.searchParams.set('genre', btn.dataset.genre);
